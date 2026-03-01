@@ -848,15 +848,23 @@ let confirmCallback = null;
 // UTILS
 // ═══════════════════════════════════════════════════════
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  // Only toggle top-level screens, not inner page panels
+  ['screen-login', 'screen-app'].forEach(sid => {
+    document.getElementById(sid).classList.remove('active');
+  });
   document.getElementById(id).classList.add('active');
 }
 
 function gotoPage(page) {
-  document.querySelectorAll('[id^=page-]').forEach(p => p.classList.remove('active'));
+  ['page-papers', 'page-settings'].forEach(pid => {
+    const el = document.getElementById(pid);
+    if (el) el.classList.remove('active');
+  });
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.getElementById('nav-' + page).classList.add('active');
+  const pageEl = document.getElementById('page-' + page);
+  const navEl  = document.getElementById('nav-' + page);
+  if (pageEl) pageEl.classList.add('active');
+  if (navEl)  navEl.classList.add('active');
 }
 
 async function apiGet(params) {
@@ -918,6 +926,7 @@ async function doAdminLogin() {
       document.getElementById('settings-script-url').textContent = SCRIPT_URL;
       msgEl.innerHTML = '';
       showScreen('screen-app');
+	gotoPage('papers'); 
       loadPapers();
     } else {
       msgEl.innerHTML = '<p class="error-msg">Access denied. This email address is not listed as an admin.</p>';
