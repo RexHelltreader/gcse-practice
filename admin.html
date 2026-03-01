@@ -902,38 +902,30 @@ function stripHtml(html) {
 async function doAdminLogin() {
   const email = document.getElementById('login-email').value.trim();
   const msgEl = document.getElementById('login-msg');
-  if (!email) { msgEl.innerHTML = '<p class="error-msg">Please enter your Google email address.</p>'; return; }
+  if (!email) {
+    msgEl.innerHTML = '<p class="error-msg">Please enter your Google email address.</p>';
+    return;
+  }
   msgEl.innerHTML = '<p style="color:var(--text3);font-size:0.82rem;">Checking…</p>';
 
-  const res = await apiPost({ action: 'loginUser', email });
-  // Check admin status separately via admins list
-  const adminsData = await apiGet({ action: 'getLibrary' }); // We'll verify locally
-  // Actually verify via a dedicated check — the loginUser returns success for any verified user
-  // We rely on the server-side isAdmin() check on all admin actions
-  // For now, proceed and let the server reject any non-admin actions
-  if (res.success || res.message === 'No account found with this email.') {
-    // Try to proceed; server-side admin checks protect all actions
-    // We trust the admin knows their own email
-    adminEmail = email;
-    adminName  = res.display_name || email.split('@')[0];
-    document.getElementById('sidebar-name').textContent  = adminName;
-    document.getElementById('sidebar-email').textContent = adminEmail;
-    document.getElementById('settings-script-url').textContent = SCRIPT_URL;
-    showScreen('screen-app');
-    loadPapers();
-  } else {
-    msgEl.innerHTML = `<p class="error-msg">${res.message || 'Access denied.'}</p>`;
+  try {
+    const res = await apiPost({ action: 'checkAdmin', email });
+    if (res.success) {
+      adminEmail = email;
+      adminName  = email.split('@')[0];
+      document.getElementById('sidebar-name').textContent  = adminName;
+      document.getElementById('sidebar-email').textContent = adminEmail;
+      document.getElementById('settings-script-url').textContent = SCRIPT_URL;
+      msgEl.innerHTML = '';
+      showScreen('screen-app');
+      loadPapers();
+    } else {
+      msgEl.innerHTML = '<p class="error-msg">Access denied. This email address is not listed as an admin.</p>';
+    }
+  } catch(e) {
+    msgEl.innerHTML = '<p class="error-msg">Could not reach the server. Check your Script URL.</p>';
   }
 }
-
-function adminSignOut() {
-  adminEmail = '';
-  adminName  = '';
-  showScreen('screen-login');
-  document.getElementById('login-email').value = '';
-  document.getElementById('login-msg').innerHTML = '';
-}
-
 // ═══════════════════════════════════════════════════════
 // PAPERS
 // ═══════════════════════════════════════════════════════
