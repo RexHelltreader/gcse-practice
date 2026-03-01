@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCSE Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:       #1a1a2e;
+    --paper:     #f5f0e8;
+    --cream:     #faf7f2;
+    --teal:      #0f7173;
+    --teal-dark: #0a5254;
+    --gold:      #c9a84c;
+    --red:       #c0392b;
+    --green:     #1a7a4a;
+    --muted:     #7a7a8c;
+    --border:    #d8d0c0;
+    --shadow:    0 4px 24px rgba(26,26,46,0.10);
+    --radius:    12px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── Header ── */
+  header {
+    width: 100%;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.25);
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+    color: var(--gold);
+  }
+  .logo span { color: var(--paper); }
+  #header-user {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  #header-user button {
+    background: none;
+    border: 1px solid var(--muted);
+    color: var(--paper);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  #header-user button:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── Screens ── */
+  .screen {
+    display: none;
+    width: 100%;
+    max-width: 720px;
+    padding: 32px 20px 60px;
+    animation: fadeUp 0.35s ease both;
+  }
+  .screen.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+
+  /* ── Typography ── */
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+    color: var(--ink);
+  }
+  h3 { font-size: 1.1rem; margin-bottom: 10px; color: var(--ink); }
+  p  { line-height: 1.65; color: #3a3a4e; margin-bottom: 10px; }
+  .muted { color: var(--muted); font-size: 0.9rem; }
+  .gold  { color: var(--gold); }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+    text-align: center;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary {
+    background: var(--teal);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(15,113,115,0.30);
+  }
+  .btn-primary:hover { background: var(--teal-dark); box-shadow: 0 6px 20px rgba(15,113,115,0.40); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--teal);
+    border: 2px solid var(--teal);
+  }
+  .btn-ghost:hover { background: var(--teal); color: #fff; }
+  .btn-full { width: 100%; display: block; }
+  .btn-sm { padding: 8px 18px; font-size: 0.9rem; }
+
+  /* ── Forms ── */
+  .field { margin-bottom: 16px; }
+  label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; }
+  input[type=text], input[type=email] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 1rem;
+    background: #fff;
+    color: var(--ink);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input:focus {
+    outline: none;
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(15,113,115,0.12);
+  }
+  .error-msg { color: var(--red); font-size: 0.85rem; margin-top: 6px; }
+  .success-msg { color: var(--green); font-size: 0.85rem; margin-top: 6px; }
+
+  /* ── Tabs ── */
+  .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 2px solid var(--border); }
+  .tab-btn {
+    padding: 10px 20px;
+    border: none;
+    background: none;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+  /* ── Library ── */
+  #library-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  select {
+    padding: 8px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.9rem;
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  select:focus { outline: none; border-color: var(--teal); }
+
+  .paper-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .paper-card {
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    cursor: pointer;
+  }
+  .paper-card:hover {
+    border-color: var(--teal);
+    box-shadow: 0 4px 20px rgba(15,113,115,0.15);
+    transform: translateY(-2px);
+  }
+  .paper-card-info { flex: 1; }
+  .paper-card-title { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+  .paper-card-meta  { font-size: 0.82rem; color: var(--muted); }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: var(--teal);
+    color: #fff;
+    white-space: nowrap;
+  }
+  .badge-gold { background: var(--gold); color: var(--ink); }
+
+  /* ── Quiz screen ── */
+  #quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+  #progress-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  #progress-bar {
+    height: 100%;
+    background: var(--teal);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+  #timer-display {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--teal);
+    min-width: 60px;
+    text-align: right;
+  }
+  #timer-display.urgent { color: var(--red); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  #question-counter {
+    font-size: 0.85rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  #question-card {
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  #question-marks {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  #question-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+  #question-image {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    display: none;
+  }
+
+  .answer-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .answer-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.97rem;
+    line-height: 1.5;
+    color: var(--ink);
+    transition: border-color 0.18s, background 0.18s, transform 0.12s;
+    width: 100%;
+  }
+  .answer-btn:hover:not(:disabled) {
+    border-color: var(--teal);
+    background: rgba(15,113,115,0.04);
+    transform: translateX(3px);
+  }
+  .answer-btn:disabled { cursor: default; }
+  .answer-btn.selected {
+    border-color: var(--teal);
+    background: rgba(15,113,115,0.08);
+  }
+  .answer-btn.correct {
+    border-color: var(--green);
+    background: rgba(26,122,74,0.08);
+  }
+  .answer-btn.incorrect {
+    border-color: var(--red);
+    background: rgba(192,57,43,0.08);
+  }
+  .answer-letter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--border);
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: background 0.18s, color 0.18s;
+  }
+  .answer-btn.selected .answer-letter { background: var(--teal); color: #fff; }
+  .answer-btn.correct  .answer-letter { background: var(--green); color: #fff; }
+  .answer-btn.incorrect .answer-letter { background: var(--red); color: #fff; }
+  .answer-img {
+    max-width: 100%;
+    border-radius: 6px;
+    margin-top: 6px;
+    display: none;
+  }
+
+  #next-btn-wrap { margin-top: 18px; text-align: right; }
+
+  /* ── Results screen ── */
+  .results-summary {
+    text-align: center;
+    padding: 32px 20px;
+  }
+  .grade-circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 32px rgba(15,113,115,0.35);
+  }
+  .grade-circle.grade-u { background: var(--muted); }
+  .grade-circle.grade-low { background: var(--red); }
+  .grade-circle.grade-mid { background: var(--gold); color: var(--ink); }
+  .grade-circle.grade-high { background: var(--green); }
+  .score-pct { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 900; }
+  .score-label { color: var(--muted); font-size: 0.95rem; margin-bottom: 20px; }
+
+  .stats-row {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 18px 0;
+  }
+  .stat-chip {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+    text-align: center;
+    min-width: 110px;
+  }
+  .stat-chip .val { font-size: 1.3rem; font-weight: 700; color: var(--teal); }
+  .stat-chip .lbl { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+  /* email report section */
+  #email-section { margin-top: 24px; }
+  .email-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .email-row input { flex: 1; }
+  #add-email-btn {
+    background: none;
+    border: none;
+    color: var(--teal);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 4px;
+  }
+
+  /* ── Spinner ── */
+  .spinner-wrap { text-align: center; padding: 60px 20px; }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--teal);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Auth modal ── */
+  #modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,26,46,0.55);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  #modal-overlay.open { display: flex; }
+  #modal-box {
+    background: var(--cream);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 16px 60px rgba(0,0,0,0.25);
+    animation: fadeUp 0.3s ease both;
+  }
+  #modal-close {
+    float: right;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--muted);
+    line-height: 1;
+    margin-top: -4px;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  /* ── Responsive ── */
+  @media (min-width: 540px) {
+    .paper-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 400px) {
+    h1 { font-size: 1.6rem; }
+    .card { padding: 20px 16px; }
+    #question-card { padding: 18px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header>
+  <div class="logo">GCSE<span>Practice</span></div>
+  <div id="header-user">
+    <span id="header-name"></span>
+    <button id="header-auth-btn" onclick="openAuthModal()">Sign in</button>
+  </div>
+</header>
+
+<!-- ═══════════════ MODAL: Auth ═══════════════ -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <button id="modal-close" onclick="closeAuthModal()">✕</button>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchAuthTab('login')">Sign in</button>
+      <button class="tab-btn"        onclick="switchAuthTab('register')">Register</button>
+    </div>
+
+    <!-- Login -->
+    <div id="auth-login">
+      <div class="field">
+        <label>Email address</label>
+        <input type="email" id="login-email" placeholder="you@example.com">
+      </div>
+      <div id="login-msg"></div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Sign in</button>
+      <p class="muted" style="margin-top:12px;text-align:center;">
+        A one-time link will be sent — no password needed.
+      </p>
+    </div>
+
+    <!-- Register -->
+    <div id="auth-register" style="display:none;">
+      <div class="field">
+        <label>Display name</label>
+        <input type="text" id="reg-name" placeholder="Your name">
+      </div>
+      <div class="field">
+        <label>Email address</label>
+        <input type="email" id="reg-email" placeholder="you@example.com">
+      </div>
+      <div id="reg-msg"></div>
+      <button class="btn btn-primary btn-full" onclick="doRegister()">Create account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SCREEN: Home ═══════════════ -->
+<div id="screen-home" class="screen active">
+  <div style="padding-top:16px;">
+    <h1>Practice for your<br><span class="gold">GCSE exams.</span></h1>
+    <p class="muted" style="margin-bottom:28px;">Free, timed past-paper style questions with instant feedback and detailed reports.</p>
+  </div>
+
+  <div class="card">
+    <h2>Paper Library</h2>
+    <div id="library-filters">
+      <select id="filter-subject" onchange="filterLibrary()">
+        <option value="">All subjects</option>
+      </select>
+      <select id="filter-tier" onchange="filterLibrary()">
+        <option value="">Foundation &amp; Higher</option>
+        <option value="Foundation">Foundation</option>
+        <option value="Higher">Higher</option>
+      </select>
+      <select id="filter-board" onchange="filterLibrary()">
+        <option value="">All exam boards</option>
+      </select>
+    </div>
+    <div id="library-list">
+      <div class="spinner-wrap"><div class="spinner"></div><p class="muted">Loading papers…</p></div>
+    </div>
+  </div>
+
+  <p class="muted" style="text-align:center;font-size:0.82rem;">
+    You can take any paper as a guest. <a href="#" onclick="openAuthModal();return false;" style="color:var(--teal);">Sign in or register</a> to receive a full report by email automatically.
+  </p>
+</div>
+
+<!-- ═══════════════ SCREEN: Quiz ═══════════════ -->
+<div id="screen-quiz" class="screen">
+  <div id="quiz-header">
+    <span id="question-counter" class="muted"></span>
+    <div id="progress-bar-wrap"><div id="progress-bar" style="width:0%"></div></div>
+    <div id="timer-display">--:--</div>
+  </div>
+
+  <div id="question-card">
+    <div id="question-marks"></div>
+    <div id="question-text"></div>
+    <img id="question-image" src="" alt="Question image">
+    <div class="answer-options" id="answer-options"></div>
+  </div>
+
+  <div id="next-btn-wrap">
+    <button id="next-btn" class="btn btn-primary" style="display:none;" onclick="nextQuestion()">Next question →</button>
+  </div>
+</div>
+
+<!-- ═══════════════ SCREEN: Results ═══════════════ -->
+<div id="screen-results" class="screen">
+  <div class="card">
+    <div class="results-summary">
+      <div class="grade-circle" id="result-grade-circle">—</div>
+      <div class="score-pct" id="result-pct">—%</div>
+      <div class="score-label" id="result-marks"></div>
+      <div class="stats-row">
+        <div class="stat-chip">
+          <div class="val" id="result-time">—</div>
+          <div class="lbl">Time taken</div>
+        </div>
+        <div class="stat-chip">
+          <div class="val" id="result-remaining">—</div>
+          <div class="lbl">Time remaining</div>
+        </div>
+        <div class="stat-chip">
+          <div class="val" id="result-grade">—</div>
+          <div class="lbl">Approx. grade</div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div id="email-section">
+      <h3>Receive your full report</h3>
+      <p class="muted" style="font-size:0.88rem;margin-bottom:14px;">Enter up to 3 email addresses to receive a detailed breakdown including per-question feedback.</p>
+      <div id="email-inputs">
+        <div class="email-row">
+          <input type="email" class="report-email" placeholder="Email address 1">
+        </div>
+      </div>
+      <button id="add-email-btn" onclick="addEmailField()">+ Add another email</button>
+      <div style="margin-top:16px;">
+        <button class="btn btn-primary btn-full" onclick="submitResults()">Submit &amp; send report</button>
+      </div>
+      <div id="submit-msg" style="margin-top:10px;"></div>
+    </div>
+
+    <div id="email-prefilled" style="display:none;">
+      <p>Your full report will be sent automatically to your registered email address.</p>
+      <button class="btn btn-primary btn-full" onclick="submitResults()">Submit results</button>
+      <div id="submit-msg-logged" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:12px;">
+    <button class="btn btn-ghost" onclick="goHome()">← Back to library</button>
+  </div>
+</div>
+
+<!-- ═══════════════ SCREEN: Submitted ═══════════════ -->
+<div id="screen-submitted" class="screen">
+  <div class="card" style="text-align:center;padding:40px 24px;">
+    <div style="font-size:3rem;margin-bottom:16px;">✓</div>
+    <h2>Results submitted</h2>
+    <p>Your report has been sent. Check your inbox — it may take a minute or two to arrive.</p>
+    <div style="margin-top:24px;">
+      <button class="btn btn-primary" onclick="goHome()">Take another paper</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIG — replace with your deployed Apps Script URL
+// ═══════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwID9BLIcBoggLZVt3RjqV_P7kqYrliCPoK6WVf-hdqDqsjNlDH1Eo1OSx37aV7eIBW/exec';
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let currentUser   = null;   // { user_id, email, display_name } or null
+let allPapers     = [];
+let currentPaper  = null;
+let currentQuestions = [];
+let currentQIndex = 0;
+let sessionResponses = [];
+let sessionStartTime = null;
+let paperTimerInterval = null;
+let questionStartTime  = null;
+let paperTimeRemaining = 0;
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function fmtTime(seconds) {
+  const s = Math.max(0, Math.round(seconds));
+  return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+}
+
+async function apiGet(params) {
+  const url = SCRIPT_URL + '?' + new URLSearchParams(params);
+  const res = await fetch(url);
+  return res.json();
+}
+
+async function apiPost(body) {
+  const res = await fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+// ═══════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════
+function openAuthModal() { document.getElementById('modal-overlay').classList.add('open'); }
+function closeAuthModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+function switchAuthTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', (tab==='login' && i===0)||(tab==='register' && i===1));
+  });
+  document.getElementById('auth-login').style.display    = tab==='login'    ? '' : 'none';
+  document.getElementById('auth-register').style.display = tab==='register' ? '' : 'none';
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const msgEl = document.getElementById('login-msg');
+  if (!email) { msgEl.innerHTML = '<p class="error-msg">Please enter your email address.</p>'; return; }
+  msgEl.innerHTML = '<p class="muted">Checking…</p>';
+  const res = await apiPost({ action: 'loginUser', email });
+  if (res.success) {
+    currentUser = res;
+    updateHeaderUser();
+    closeAuthModal();
+    msgEl.innerHTML = '';
+  } else {
+    msgEl.innerHTML = `<p class="error-msg">${res.message}</p>`;
+  }
+}
+
+async function doRegister() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const msgEl = document.getElementById('reg-msg');
+  if (!name || !email) { msgEl.innerHTML = '<p class="error-msg">Please fill in all fields.</p>'; return; }
+  msgEl.innerHTML = '<p class="muted">Registering…</p>';
+  const res = await apiPost({ action: 'registerUser', display_name: name, email });
+  msgEl.innerHTML = res.success
+    ? `<p class="success-msg">${res.message}</p>`
+    : `<p class="error-msg">${res.message}</p>`;
+}
+
+function updateHeaderUser() {
+  const nameEl = document.getElementById('header-name');
+  const btnEl  = document.getElementById('header-auth-btn');
+  if (currentUser) {
+    nameEl.textContent = currentUser.display_name || currentUser.email;
+    btnEl.textContent  = 'Sign out';
+    btnEl.onclick      = signOut;
+  } else {
+    nameEl.textContent = '';
+    btnEl.textContent  = 'Sign in';
+    btnEl.onclick      = openAuthModal;
+  }
+}
+
+function signOut() {
+  currentUser = null;
+  updateHeaderUser();
+}
+
+// ═══════════════════════════════════════════
+// LIBRARY
+// ═══════════════════════════════════════════
+async function loadLibrary() {
+  try {
+    const data = await apiGet({ action: 'getLibrary' });
+    allPapers = Array.isArray(data) ? data : [];
+    populateFilters();
+    renderLibrary(allPapers);
+  } catch(e) {
+    document.getElementById('library-list').innerHTML =
+      '<p class="error-msg">Could not load papers. Please refresh the page.</p>';
+  }
+}
+
+function populateFilters() {
+  const subjects = [...new Set(allPapers.map(p => p.subject).filter(Boolean))].sort();
+  const boards   = [...new Set(allPapers.map(p => p.exam_board).filter(Boolean))].sort();
+  const subSel   = document.getElementById('filter-subject');
+  const boardSel = document.getElementById('filter-board');
+  subjects.forEach(s => { const o = document.createElement('option'); o.value=s; o.textContent=s; subSel.appendChild(o); });
+  boards.forEach(b => { const o = document.createElement('option'); o.value=b; o.textContent=b; boardSel.appendChild(o); });
+}
+
+function filterLibrary() {
+  const sub   = document.getElementById('filter-subject').value;
+  const tier  = document.getElementById('filter-tier').value;
+  const board = document.getElementById('filter-board').value;
+  const filtered = allPapers.filter(p =>
+    (!sub  || p.subject   === sub)  &&
+    (!tier || p.tier      === tier) &&
+    (!board|| p.exam_board=== board)
+  );
+  renderLibrary(filtered);
+}
+
+function renderLibrary(papers) {
+  const el = document.getElementById('library-list');
+  if (!papers.length) {
+    el.innerHTML = '<p class="muted">No papers match your filters.</p>';
+    return;
+  }
+  el.innerHTML = `<div class="paper-grid">${papers.map(p => `
+    <div class="paper-card" onclick="startPaper('${p.paper_id}')">
+      <div class="paper-card-info">
+        <div class="paper-card-title">${p.title}</div>
+        <div class="paper-card-meta">
+          ${p.subject || ''} ${p.tier ? '· ' + p.tier : ''} ${p.exam_board ? '· ' + p.exam_board : ''}
+        </div>
+        <div class="paper-card-meta" style="margin-top:4px;">
+          ${p.total_marks} marks · ${fmtTime(p.time_limit_seconds)}
+        </div>
+      </div>
+      <div>
+        ${p.difficulty_label ? `<span class="badge badge-gold">${p.difficulty_label}</span>` : ''}
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════
+async function startPaper(paper_id) {
+  showScreen('screen-quiz');
+  document.getElementById('question-card').innerHTML =
+    '<div class="spinner-wrap"><div class="spinner"></div><p class="muted">Loading paper…</p></div>';
+  document.getElementById('answer-options').innerHTML = '';
+  document.getElementById('next-btn').style.display = 'none';
+
+  try {
+    const data = await apiGet({ action: 'getPaper', paper_id });
+    currentPaper     = data.paper;
+    currentQuestions = data.questions;
+    currentQIndex    = 0;
+    sessionResponses = [];
+    sessionStartTime = new Date();
+    paperTimeRemaining = Number(currentPaper.time_limit_seconds);
+
+    // Restore question-card markup
+    document.getElementById('question-card').innerHTML = `
+      <div id="question-marks"></div>
+      <div id="question-text"></div>
+      <img id="question-image" src="" alt="Question image" style="max-width:100%;border-radius:8px;margin-bottom:14px;display:none;">
+      <div class="answer-options" id="answer-options"></div>`;
+
+    startPaperTimer();
+    showQuestion();
+  } catch(e) {
+    document.getElementById('question-card').innerHTML =
+      `<p class="error-msg">Could not load this paper. Please try again.</p>`;
+  }
+}
+
+function startPaperTimer() {
+  clearInterval(paperTimerInterval);
+  updateTimerDisplay();
+  paperTimerInterval = setInterval(() => {
+    paperTimeRemaining--;
+    updateTimerDisplay();
+    if (paperTimeRemaining <= 0) {
+      clearInterval(paperTimerInterval);
+      endSession();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer-display');
+  el.textContent = fmtTime(paperTimeRemaining);
+  el.classList.toggle('urgent', paperTimeRemaining <= 60);
+}
+
+function showQuestion() {
+  const q = currentQuestions[currentQIndex];
+  questionStartTime = Date.now();
+
+  // Progress
+  const pct = (currentQIndex / currentQuestions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('question-counter').textContent =
+    `Question ${currentQIndex + 1} of ${currentQuestions.length}`;
+
+  // Marks badge
+  document.getElementById('question-marks').textContent =
+    `${q.max_marks} mark${q.max_marks != 1 ? 's' : ''}`;
+
+  // Question text
+  document.getElementById('question-text').innerHTML =
+    q.question_text_html || '';
+
+  // Question image
+  const qImg = document.getElementById('question-image');
+  if (q.question_image_url) {
+    qImg.src = q.question_image_url;
+    qImg.style.display = 'block';
+  } else {
+    qImg.style.display = 'none';
+  }
+
+  // Answer options
+  const opts = document.getElementById('answer-options');
+  opts.innerHTML = '';
+  ['a','b','c','d'].forEach(letter => {
+    const html  = q[`answer_${letter}_html`]  || '';
+    const imgUrl= q[`answer_${letter}_image_url`] || '';
+    if (!html && !imgUrl) return;
+
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.dataset.answer = letter;
+    btn.innerHTML = `
+      <span class="answer-letter">${letter.toUpperCase()}</span>
+      <span class="answer-content">
+        ${html}
+        ${imgUrl ? `<img src="${imgUrl}" class="answer-img" style="display:block;max-width:100%;border-radius:6px;margin-top:6px;">` : ''}
+      </span>`;
+    btn.onclick = () => selectAnswer(btn, letter);
+    opts.appendChild(btn);
+  });
+
+  document.getElementById('next-btn').style.display = 'none';
+}
+
+function selectAnswer(btn, letter) {
+  // Prevent re-selection
+  if (btn.classList.contains('selected') || btn.disabled) return;
+
+  const timeTaken = Math.round((Date.now() - questionStartTime) / 1000);
+  const q = currentQuestions[currentQIndex];
+
+  // Disable all buttons
+  document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
+
+  // Mark selected
+  btn.classList.add('selected');
+
+  // Calculate marks for this answer
+  const answerMarks = q.answerMarks || [];
+  const slots = q.slots || [];
+  const satisfiedSlotIds = [];
+  const missedSlotIds = [];
+
+  slots.forEach(slot => {
+    const entry = answerMarks.find(m => m.slot_id === slot.slot_id && m.answer_option === letter);
+    if (entry && (entry.is_satisfied === 'TRUE' || entry.is_satisfied === true)) {
+      satisfiedSlotIds.push(slot.slot_id);
+    } else {
+      missedSlotIds.push(slot.slot_id);
+    }
+  });
+
+  const marksAwarded = satisfiedSlotIds.length;
+
+  sessionResponses.push({
+    question_id:        q.question_id,
+    answer_given:       letter,
+    marks_awarded:      marksAwarded,
+    time_taken_seconds: timeTaken,
+    slots_satisfied:    satisfiedSlotIds,
+    slots_missed:       missedSlotIds
+  });
+
+  // Show next button
+  document.getElementById('next-btn').style.display = 'inline-block';
+  document.getElementById('next-btn').textContent =
+    currentQIndex < currentQuestions.length - 1 ? 'Next question →' : 'Finish paper →';
+}
+
+function nextQuestion() {
+  currentQIndex++;
+  if (currentQIndex >= currentQuestions.length) {
+    endSession();
+  } else {
+    showQuestion();
+  }
+}
+
+function endSession() {
+  clearInterval(paperTimerInterval);
+  const totalSeconds = Math.round((Date.now() - sessionStartTime) / 1000);
+  showResultsScreen(totalSeconds);
+}
+
+// ═══════════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════════
+function showResultsScreen(totalSeconds) {
+  // Calculate client-side totals for immediate display
+  let marksAchieved = 0;
+  let totalMarks    = 0;
+  currentQuestions.forEach(q => {
+    totalMarks += Number(q.max_marks);
+    const resp = sessionResponses.find(r => r.question_id === q.question_id);
+    if (resp) marksAchieved += resp.marks_awarded;
+  });
+  const pct = totalMarks > 0 ? Math.round((marksAchieved / totalMarks) * 100) : 0;
+
+  // Grade (estimated client-side; server will confirm)
+  const grade = estimateGrade(pct);
+
+  // Grade circle colour
+  const circle = document.getElementById('result-grade-circle');
+  circle.textContent = grade;
+  circle.className = 'grade-circle';
+  if (grade === 'U')              circle.classList.add('grade-u');
+  else if (Number(grade) <= 3)    circle.classList.add('grade-low');
+  else if (Number(grade) <= 6)    circle.classList.add('grade-mid');
+  else                            circle.classList.add('grade-high');
+
+  document.getElementById('result-pct').textContent    = `${pct}%`;
+  document.getElementById('result-marks').textContent  = `${marksAchieved} / ${totalMarks} marks`;
+  document.getElementById('result-time').textContent   = fmtTime(totalSeconds);
+  document.getElementById('result-remaining').textContent = fmtTime(Math.max(0, paperTimeRemaining));
+  document.getElementById('result-grade').textContent  = grade;
+
+  // If logged in, show auto-email section
+  if (currentUser) {
+    document.getElementById('email-section').style.display   = 'none';
+    document.getElementById('email-prefilled').style.display = '';
+  } else {
+    document.getElementById('email-section').style.display   = '';
+    document.getElementById('email-prefilled').style.display = 'none';
+  }
+
+  showScreen('screen-results');
+}
+
+function estimateGrade(pct) {
+  // Rough estimate before server response; overridden by server grade
+  if (pct >= 90) return '9';
+  if (pct >= 80) return '8';
+  if (pct >= 70) return '7';
+  if (pct >= 60) return '6';
+  if (pct >= 50) return '5';
+  if (pct >= 40) return '4';
+  if (pct >= 30) return '3';
+  if (pct >= 20) return '2';
+  if (pct >= 10) return '1';
+  return 'U';
+}
+
+function addEmailField() {
+  const container = document.getElementById('email-inputs');
+  const rows = container.querySelectorAll('.email-row');
+  if (rows.length >= 3) return;
+  const div = document.createElement('div');
+  div.className = 'email-row';
+  div.innerHTML = `<input type="email" class="report-email" placeholder="Email address ${rows.length + 1}">`;
+  container.appendChild(div);
+  if (rows.length + 1 >= 3) document.getElementById('add-email-btn').style.display = 'none';
+}
+
+async function submitResults() {
+  const emails = currentUser
+    ? [currentUser.email]
+    : [...document.querySelectorAll('.report-email')]
+        .map(i => i.value.trim())
+        .filter(e => e && e.includes('@'));
+
+  const msgEl = document.getElementById(currentUser ? 'submit-msg-logged' : 'submit-msg');
+  msgEl.innerHTML = '<p class="muted">Submitting…</p>';
+
+  try {
+    const res = await apiPost({
+      action:               'submitSession',
+      paper_id:             currentPaper.paper_id,
+      user_id:              currentUser ? currentUser.user_id : null,
+      started_at:           sessionStartTime.toISOString(),
+      responses:            sessionResponses,
+      time_remaining_seconds: Math.max(0, paperTimeRemaining),
+      report_emails:        emails
+    });
+
+    if (res.success) {
+      // Update grade with server-confirmed value
+      document.getElementById('result-grade').textContent = res.grade || '—';
+      document.getElementById('result-grade-circle').textContent = res.grade || '—';
+      showScreen('screen-submitted');
+    } else {
+      msgEl.innerHTML = '<p class="error-msg">Something went wrong. Please try again.</p>';
+    }
+  } catch(e) {
+    msgEl.innerHTML = '<p class="error-msg">Network error. Please check your connection and try again.</p>';
+  }
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function goHome() {
+  clearInterval(paperTimerInterval);
+  currentPaper = null;
+  showScreen('screen-home');
+}
+
+// ═══════════════════════════════════════════
+// URL PARAMETER: open a specific paper directly
+// ═══════════════════════════════════════════
+function checkUrlPaper() {
+  const params = new URLSearchParams(window.location.search);
+  const pid = params.get('paper');
+  if (pid) startPaper(pid);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+loadLibrary();
+checkUrlPaper();
+</script>
+</body>
+</html>
