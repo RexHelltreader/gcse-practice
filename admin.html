@@ -7,9 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════
-   TOKENS
-═══════════════════════════════════════ */
 :root {
   --bg:        #0e0f14;
   --surface:   #16181f;
@@ -41,14 +38,55 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
-/* ═══ LAYOUT ═══ */
-#app { display: flex; flex: 1; min-height: 100vh; }
+/* ── TOP-LEVEL VIEWS: only one visible at a time ── */
+#view-login { display: flex; }
+#view-app   { display: none; }
 
-/* ─── Sidebar ─── */
+/* ── LOGIN ── */
+#view-login {
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+.login-box {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  animation: fadeUp 0.35s ease both;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.login-box .logo {
+  font-family: 'Fraunces', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.login-box .logo span { color: var(--accent2); }
+.login-box .sub {
+  font-size: 0.82rem;
+  color: var(--text3);
+  margin-bottom: 28px;
+  font-family: var(--mono);
+}
+
+/* ── APP SHELL ── */
+#view-app {
+  flex-direction: row;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR ── */
 #sidebar {
   width: 240px;
   background: var(--surface);
@@ -58,7 +96,6 @@ body {
   position: fixed;
   top: 0; left: 0; bottom: 0;
   z-index: 50;
-  transition: transform 0.25s;
 }
 .sidebar-logo {
   padding: 24px 20px 20px;
@@ -69,13 +106,18 @@ body {
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--text);
-  letter-spacing: -0.01em;
 }
 .sidebar-logo h1 span { color: var(--accent2); }
-.sidebar-logo p { font-size: 0.72rem; color: var(--text3); margin-top: 2px; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; }
-
+.sidebar-logo p {
+  font-size: 0.72rem;
+  color: var(--text3);
+  margin-top: 2px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
 .sidebar-nav { flex: 1; padding: 16px 10px; }
-.nav-section-label {
+.nav-label {
   font-size: 0.68rem;
   font-family: var(--mono);
   text-transform: uppercase;
@@ -100,18 +142,17 @@ body {
   width: 100%;
   text-align: left;
 }
-.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item:hover  { background: var(--surface2); color: var(--text); }
 .nav-item.active { background: var(--accent-bg); color: var(--accent2); }
 .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
-
-.sidebar-user {
+.sidebar-footer {
   padding: 14px 16px;
   border-top: 1px solid var(--border);
   font-size: 0.82rem;
 }
-.sidebar-user .name { font-weight: 600; color: var(--text); margin-bottom: 2px; }
-.sidebar-user .email { color: var(--text3); font-size: 0.75rem; font-family: var(--mono); }
-.sidebar-user .signout-btn {
+.sidebar-footer .name  { font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.sidebar-footer .email { color: var(--text3); font-size: 0.75rem; font-family: var(--mono); }
+.signout-btn {
   margin-top: 8px;
   background: none;
   border: 1px solid var(--border2);
@@ -122,44 +163,43 @@ body {
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
 }
-.sidebar-user .signout-btn:hover { border-color: var(--red); color: var(--red); }
+.signout-btn:hover { border-color: var(--red); color: var(--red); }
 
-/* ─── Main ─── */
+/* ── MAIN CONTENT AREA ── */
 #main {
   margin-left: 240px;
   flex: 1;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
+/* ── INNER PAGES: only one visible at a time ── */
+.page { display: none; flex-direction: column; flex: 1; }
+.page.active { display: flex; }
+
+/* ── PAGE HEADER ── */
 .page-header {
-  padding: 28px 36px 0;
+  padding: 28px 36px 20px;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
-  padding-bottom: 0;
 }
-.page-header-left h2 {
+.page-header h2 {
   font-family: 'Fraunces', serif;
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 4px;
 }
-.page-header-left p { font-size: 0.85rem; color: var(--text2); padding-bottom: 20px; }
-.page-header-actions { display: flex; gap: 10px; padding-bottom: 20px; }
-
+.page-header p { font-size: 0.85rem; color: var(--text2); }
+.page-header-actions { display: flex; gap: 10px; }
 .content { padding: 28px 36px; flex: 1; }
 
-/* ═══ SCREENS ═══ */
-.screen { display: none; }
-.screen.active { display: flex; flex-direction: column; flex: 1; }
-
-/* ═══ BUTTONS ═══ */
+/* ── BUTTONS ── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -176,7 +216,7 @@ body {
 }
 .btn:active { transform: scale(0.97); }
 .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 16px rgba(124,106,247,0.3); }
-.btn-primary:hover { background: var(--accent2); box-shadow: 0 6px 20px rgba(124,106,247,0.4); }
+.btn-primary:hover { background: var(--accent2); }
 .btn-ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
 .btn-ghost:hover { background: var(--surface3); color: var(--text); }
 .btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid rgba(240,101,101,0.2); }
@@ -186,7 +226,7 @@ body {
 .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
 .btn-icon { padding: 7px 10px; }
 
-/* ═══ CARDS / PANELS ═══ */
+/* ── CARDS ── */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -203,7 +243,7 @@ body {
   margin-bottom: 14px;
 }
 
-/* ═══ FORMS ═══ */
+/* ── FORMS ── */
 .field { margin-bottom: 18px; }
 .field label {
   display: block;
@@ -211,7 +251,6 @@ body {
   font-weight: 600;
   color: var(--text2);
   margin-bottom: 7px;
-  letter-spacing: 0.01em;
 }
 .field label .hint {
   font-weight: 400;
@@ -238,16 +277,13 @@ input:focus, select:focus, textarea:focus {
 }
 textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
 select { cursor: pointer; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-.rich-hint {
-  font-size: 0.75rem;
-  color: var(--text3);
-  margin-top: 5px;
-  font-family: var(--mono);
-}
+.rich-hint  { font-size: 0.75rem; color: var(--text3); margin-top: 5px; font-family: var(--mono); }
+.error-msg   { color: var(--red);   font-size: 0.82rem; margin-top: 8px; }
+.success-msg { color: var(--green); font-size: 0.82rem; margin-top: 8px; }
 
-/* ═══ BADGE / TAG ═══ */
+/* ── BADGES ── */
 .badge {
   display: inline-block;
   padding: 2px 10px;
@@ -255,61 +291,30 @@ select { cursor: pointer; }
   font-size: 0.72rem;
   font-weight: 600;
   font-family: var(--mono);
-  letter-spacing: 0.04em;
 }
 .badge-green  { background: var(--green-bg);  color: var(--green); }
 .badge-grey   { background: var(--surface3);  color: var(--text3); }
-.badge-accent { background: var(--accent-bg); color: var(--accent2); }
 .badge-gold   { background: var(--gold-bg);   color: var(--gold); }
 
-/* ═══ TABLE ═══ */
-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-thead tr { border-bottom: 1px solid var(--border); }
-thead th { padding: 10px 14px; text-align: left; font-size: 0.72rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); }
-tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
-tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: var(--surface2); }
-tbody td { padding: 12px 14px; color: var(--text2); vertical-align: middle; }
-tbody td .primary { color: var(--text); font-weight: 600; }
-tbody td .mono { font-family: var(--mono); font-size: 0.78rem; color: var(--text3); }
-.table-actions { display: flex; gap: 6px; justify-content: flex-end; }
+/* ── GRADE BOUNDARIES ── */
+.boundaries-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+.boundary-cell { text-align: center; }
+.boundary-cell label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text3);
+  margin-bottom: 6px;
+  text-align: center;
+}
+.boundary-cell input { text-align: center; padding: 8px 4px; font-size: 0.88rem; }
 
-/* ═══ LOGIN SCREEN ═══ */
-#screen-login {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: var(--bg);
-  padding: 24px;
-}
-#screen-login.active { display: flex; }
-.login-box {
-  width: 100%;
-  max-width: 380px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 36px 32px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-  animation: fadeUp 0.35s ease both;
-}
-@keyframes fadeUp {
-  from { opacity:0; transform:translateY(16px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-.login-box .logo {
-  font-family: 'Fraunces', serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-.login-box .logo span { color: var(--accent2); }
-.login-box .sub { font-size: 0.82rem; color: var(--text3); margin-bottom: 28px; font-family: var(--mono); }
-.error-msg { color: var(--red); font-size: 0.82rem; margin-top: 8px; }
-.success-msg { color: var(--green); font-size: 0.82rem; margin-top: 8px; }
-
-/* ═══ PAPER LIST ═══ */
+/* ── PAPER LIST ── */
 .paper-list { display: flex; flex-direction: column; gap: 10px; }
 .paper-row {
   display: flex;
@@ -322,14 +327,34 @@ tbody td .mono { font-family: var(--mono); font-size: 0.78rem; color: var(--text
   transition: border-color 0.15s, background 0.15s;
   cursor: pointer;
 }
-.paper-row:hover { border-color: var(--accent); background: var(--surface2); }
+.paper-row:hover    { border-color: var(--accent); background: var(--surface2); }
 .paper-row.selected { border-color: var(--accent); background: var(--accent-bg); }
-.paper-row-info { flex: 1; }
+.paper-row-info  { flex: 1; }
 .paper-row-title { font-weight: 600; color: var(--text); margin-bottom: 3px; font-size: 0.95rem; }
 .paper-row-meta  { font-size: 0.78rem; color: var(--text3); font-family: var(--mono); }
 .paper-row-actions { display: flex; gap: 6px; align-items: center; }
 
-/* ═══ QUESTION EDITOR ═══ */
+/* ── QUESTION LIST ── */
+.question-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.question-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: border-color 0.15s;
+}
+.question-row:hover   { border-color: var(--border2); }
+.question-row.editing { border-color: var(--accent); background: var(--accent-bg); }
+.q-num     { font-family: var(--mono); font-size: 0.75rem; color: var(--text3); width: 24px; }
+.q-preview { flex: 1; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px; }
+.q-marks   { font-family: var(--mono); font-size: 0.78rem; color: var(--gold); }
+.q-actions { display: flex; gap: 6px; margin-left: auto; }
+
+/* ── QUESTION EDITOR ── */
 #question-editor {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -352,7 +377,7 @@ tbody td .mono { font-family: var(--mono); font-size: 0.78rem; color: var(--text
 }
 .qe-body { padding: 24px 22px; }
 
-/* Answer option editors */
+/* ── ANSWER OPTION EDITORS ── */
 .answer-option-editor {
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -379,17 +404,11 @@ tbody td .mono { font-family: var(--mono); font-size: 0.78rem; color: var(--text
   flex-shrink: 0;
 }
 
-/* Mark slots grid */
+/* ── MARK SLOTS ── */
 .mark-slots-section {
   margin-top: 24px;
   padding-top: 22px;
   border-top: 1px solid var(--border);
-}
-.mark-slots-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
 }
 .slot-row {
   display: flex;
@@ -401,19 +420,9 @@ tbody td .mono { font-family: var(--mono); font-size: 0.78rem; color: var(--text
   border-radius: 8px;
   margin-bottom: 8px;
 }
-.slot-num {
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  color: var(--text3);
-  width: 20px;
-  flex-shrink: 0;
-}
+.slot-num { font-family: var(--mono); font-size: 0.78rem; color: var(--text3); width: 20px; flex-shrink: 0; }
 .slot-tag-input { flex: 1; }
-.slot-checkboxes {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
+.slot-checkboxes { display: flex; gap: 6px; align-items: center; }
 .slot-check-label {
   display: flex;
   align-items: center;
@@ -430,52 +439,10 @@ tbody td .mono { font-family: var(--mono); font-size: 0.78rem; color: var(--text
 .slot-check-label:hover { border-color: var(--accent); color: var(--text); }
 .slot-check-label input { display: none; }
 .slot-check-label.checked { background: var(--accent-bg); color: var(--accent2); border-color: var(--accent); font-weight: 600; }
-.slot-delete { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 1rem; padding: 2px 6px; border-radius: 4px; transition: color 0.15s; }
+.slot-delete { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 1rem; padding: 2px 6px; border-radius: 4px; }
 .slot-delete:hover { color: var(--red); }
 
-/* Grade boundaries grid */
-.boundaries-grid {
-  display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  gap: 10px;
-  margin-top: 12px;
-}
-.boundary-cell { text-align: center; }
-.boundary-cell label {
-  display: block;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  color: var(--text3);
-  margin-bottom: 6px;
-  text-align: center;
-}
-.boundary-cell input {
-  text-align: center;
-  padding: 8px 4px;
-  font-size: 0.88rem;
-}
-
-/* Questions list */
-.question-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-.question-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.875rem;
-  transition: border-color 0.15s;
-}
-.question-row:hover { border-color: var(--border2); }
-.question-row.editing { border-color: var(--accent); background: var(--accent-bg); }
-.q-num { font-family: var(--mono); font-size: 0.75rem; color: var(--text3); width: 24px; }
-.q-preview { flex: 1; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px; }
-.q-marks { font-family: var(--mono); font-size: 0.78rem; color: var(--gold); }
-.q-actions { display: flex; gap: 6px; margin-left: auto; }
-
-/* URL display */
+/* ── URL DISPLAY ── */
 .url-display {
   display: flex;
   align-items: center;
@@ -494,10 +461,10 @@ tbody td .mono { font-family: var(--mono); font-size: 0.78rem; color: var(--text
   word-break: break-all;
 }
 
-/* Divider */
+/* ── DIVIDER ── */
 .divider { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
 
-/* Spinner */
+/* ── SPINNER ── */
 .spinner-wrap { text-align: center; padding: 48px 20px; }
 .spinner {
   width: 36px; height: 36px;
@@ -509,11 +476,15 @@ tbody td .mono { font-family: var(--mono); font-size: 0.78rem; color: var(--text
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Toast */
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 48px 24px; color: var(--text3); }
+.empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
+.empty-state p { font-size: 0.9rem; }
+
+/* ── TOAST ── */
 #toast {
   position: fixed;
-  bottom: 28px;
-  right: 28px;
+  bottom: 28px; right: 28px;
   background: var(--surface3);
   color: var(--text);
   border: 1px solid var(--border2);
@@ -528,11 +499,11 @@ tbody td .mono { font-family: var(--mono); font-size: 0.78rem; color: var(--text
   transition: opacity 0.25s, transform 0.25s;
   pointer-events: none;
 }
-#toast.show { opacity: 1; transform: translateY(0); }
+#toast.show     { opacity: 1; transform: translateY(0); }
 #toast.toast-ok  { border-color: var(--green); color: var(--green); }
 #toast.toast-err { border-color: var(--red);   color: var(--red); }
 
-/* Confirm dialog */
+/* ── CONFIRM DIALOG ── */
 #confirm-overlay {
   display: none;
   position: fixed;
@@ -557,36 +528,27 @@ tbody td .mono { font-family: var(--mono); font-size: 0.78rem; color: var(--text
 #confirm-box h3 { font-family: 'Fraunces', serif; font-size: 1.1rem; margin-bottom: 10px; }
 #confirm-box p  { color: var(--text2); font-size: 0.88rem; margin-bottom: 22px; line-height: 1.5; }
 .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
-
-/* Empty state */
-.empty-state {
-  text-align: center;
-  padding: 48px 24px;
-  color: var(--text3);
-}
-.empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
-.empty-state p { font-size: 0.9rem; }
 </style>
 </head>
 <body>
 
-<!-- ═══ TOAST ═══ -->
 <div id="toast"></div>
 
-<!-- ═══ CONFIRM DIALOG ═══ -->
 <div id="confirm-overlay">
   <div id="confirm-box">
     <h3 id="confirm-title">Are you sure?</h3>
     <p id="confirm-msg"></p>
     <div class="confirm-actions">
-      <button class="btn btn-ghost" onclick="confirmCancel()">Cancel</button>
-      <button class="btn btn-danger" id="confirm-ok-btn" onclick="confirmOk()">Delete</button>
+      <button class="btn btn-ghost"   onclick="confirmCancel()">Cancel</button>
+      <button class="btn btn-danger"  id="confirm-ok-btn" onclick="confirmOk()">Delete</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ LOGIN ═══ -->
-<div id="screen-login" class="screen active">
+<!-- ════════════════════════════════
+     VIEW: LOGIN
+════════════════════════════════ -->
+<div id="view-login">
   <div class="login-box">
     <div class="logo">GCSE<span>Practice</span></div>
     <div class="sub">Admin Panel · Authorised access only</div>
@@ -603,239 +565,222 @@ tbody td .mono { font-family: var(--mono); font-size: 0.78rem; color: var(--text
   </div>
 </div>
 
-<!-- ═══ MAIN APP ═══ -->
-<div id="screen-app" class="screen">
-  <div id="app">
+<!-- ════════════════════════════════
+     VIEW: APP SHELL
+════════════════════════════════ -->
+<div id="view-app">
 
-    <!-- Sidebar -->
-    <aside id="sidebar">
-      <div class="sidebar-logo">
-        <h1>GCSE<span>Practice</span></h1>
-        <p>Admin Panel</p>
-      </div>
-      <nav class="sidebar-nav">
-        <div class="nav-section-label">Content</div>
-        <button class="nav-item active" onclick="gotoPage('papers')" id="nav-papers">
-          <span class="nav-icon">📄</span> Papers
-        </button>
-        <div class="nav-section-label">Settings</div>
-        <button class="nav-item" onclick="gotoPage('settings')" id="nav-settings">
-          <span class="nav-icon">⚙️</span> Settings
-        </button>
-      </nav>
-      <div class="sidebar-user">
-        <div class="name" id="sidebar-name">—</div>
-        <div class="email" id="sidebar-email">—</div>
-        <button class="signout-btn" onclick="adminSignOut()">Sign out</button>
-      </div>
-    </aside>
+  <aside id="sidebar">
+    <div class="sidebar-logo">
+      <h1>GCSE<span>Practice</span></h1>
+      <p>Admin Panel</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Content</div>
+      <button class="nav-item active" id="nav-papers" onclick="gotoPage('papers')">
+        <span class="nav-icon">📄</span> Papers
+      </button>
+      <div class="nav-label">Config</div>
+      <button class="nav-item" id="nav-settings" onclick="gotoPage('settings')">
+        <span class="nav-icon">⚙️</span> Settings
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="name"  id="sidebar-name">—</div>
+      <div class="email" id="sidebar-email">—</div>
+      <button class="signout-btn" onclick="adminSignOut()">Sign out</button>
+    </div>
+  </aside>
 
-    <div id="main">
+  <div id="main">
 
-      <!-- ─── PAGE: Papers ─── -->
-      <div id="page-papers" class="screen active" style="flex-direction:column;">
-        <div class="page-header">
-          <div class="page-header-left">
-            <h2>Papers</h2>
-            <p>Create and manage exam papers. Click a paper to edit its questions.</p>
-          </div>
-          <div class="page-header-actions">
-            <button class="btn btn-primary" onclick="openNewPaperForm()">＋ New paper</button>
-          </div>
+    <!-- ── PAGE: Papers ── -->
+    <div id="page-papers" class="page active">
+      <div class="page-header">
+        <div>
+          <h2>Papers</h2>
+          <p>Create and manage exam papers. Click a paper row to manage its questions.</p>
         </div>
-        <div class="content">
+        <div class="page-header-actions">
+          <button class="btn btn-primary" onclick="openNewPaperForm()">＋ New paper</button>
+        </div>
+      </div>
+      <div class="content">
 
-          <!-- New / Edit paper form -->
-          <div id="paper-form-wrap" style="display:none;">
-            <div class="card">
-              <div class="card-title" id="paper-form-title">New paper</div>
-              <input type="hidden" id="pf-id">
-              <div class="form-row">
-                <div class="field"><label>Title</label>
-                  <input type="text" id="pf-title" placeholder="e.g. AQA Maths Foundation Paper 1 2023"></div>
-                <div class="field"><label>Subject</label>
-                  <input type="text" id="pf-subject" placeholder="e.g. Mathematics"></div>
-              </div>
-              <div class="form-row-3">
-                <div class="field"><label>Tier</label>
-                  <select id="pf-tier">
-                    <option value="">— select —</option>
-                    <option>Foundation</option>
-                    <option>Higher</option>
-                  </select>
-                </div>
-                <div class="field"><label>Exam board</label>
-                  <input type="text" id="pf-board" placeholder="e.g. AQA"></div>
-                <div class="field"><label>Difficulty label <span class="hint">optional</span></label>
-                  <input type="text" id="pf-difficulty" placeholder="e.g. Challenging"></div>
-              </div>
-              <div class="form-row">
-                <div class="field"><label>Time limit (minutes)</label>
-                  <input type="number" id="pf-time" min="1" placeholder="e.g. 90"></div>
-                <div class="field"><label>Total marks</label>
-                  <input type="number" id="pf-marks" min="1" placeholder="e.g. 80"></div>
-              </div>
-
-              <!-- Grade boundaries -->
-              <hr class="divider">
-              <div class="card-title">Grade boundaries (minimum % for each grade)</div>
-              <div class="boundaries-grid">
-                <div class="boundary-cell"><label>Grade 1</label><input type="number" id="gb-1" min="0" max="100" placeholder="0"></div>
-                <div class="boundary-cell"><label>Grade 2</label><input type="number" id="gb-2" min="0" max="100" placeholder="10"></div>
-                <div class="boundary-cell"><label>Grade 3</label><input type="number" id="gb-3" min="0" max="100" placeholder="20"></div>
-                <div class="boundary-cell"><label>Grade 4</label><input type="number" id="gb-4" min="0" max="100" placeholder="30"></div>
-                <div class="boundary-cell"><label>Grade 5</label><input type="number" id="gb-5" min="0" max="100" placeholder="40"></div>
-                <div class="boundary-cell"><label>Grade 6</label><input type="number" id="gb-6" min="0" max="100" placeholder="50"></div>
-                <div class="boundary-cell"><label>Grade 7</label><input type="number" id="gb-7" min="0" max="100" placeholder="60"></div>
-                <div class="boundary-cell"><label>Grade 8</label><input type="number" id="gb-8" min="0" max="100" placeholder="70"></div>
-                <div class="boundary-cell"><label>Grade 9</label><input type="number" id="gb-9" min="0" max="100" placeholder="85"></div>
-              </div>
-
-              <div style="display:flex;gap:10px;margin-top:22px;">
-                <button class="btn btn-primary" onclick="savePaper()">Save paper</button>
-                <button class="btn btn-ghost" onclick="closePaperForm()">Cancel</button>
-              </div>
+        <!-- Paper form (hidden until New / Edit clicked) -->
+        <div id="paper-form-wrap" style="display:none;">
+          <div class="card">
+            <div class="card-title" id="paper-form-title">New paper</div>
+            <input type="hidden" id="pf-id">
+            <div class="form-row">
+              <div class="field"><label>Title</label>
+                <input type="text" id="pf-title" placeholder="e.g. AQA Maths Foundation Paper 1 2023"></div>
+              <div class="field"><label>Subject</label>
+                <input type="text" id="pf-subject" placeholder="e.g. Mathematics"></div>
             </div>
-          </div>
-
-          <!-- Papers list -->
-          <div id="papers-list-wrap">
-            <div class="spinner-wrap"><div class="spinner"></div></div>
-          </div>
-
-          <!-- Questions section (shown when a paper is selected) -->
-          <div id="questions-section" style="display:none;">
+            <div class="form-row-3">
+              <div class="field"><label>Tier</label>
+                <select id="pf-tier">
+                  <option value="">— select —</option>
+                  <option>Foundation</option>
+                  <option>Higher</option>
+                </select>
+              </div>
+              <div class="field"><label>Exam board</label>
+                <input type="text" id="pf-board" placeholder="e.g. AQA"></div>
+              <div class="field"><label>Difficulty label <span class="hint">optional</span></label>
+                <input type="text" id="pf-difficulty" placeholder="e.g. Challenging"></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label>Time limit (minutes)</label>
+                <input type="number" id="pf-time" min="1" placeholder="e.g. 90"></div>
+              <div class="field"><label>Total marks</label>
+                <input type="number" id="pf-marks" min="1" placeholder="e.g. 80"></div>
+            </div>
             <hr class="divider">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
-              <div>
-                <div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;" id="qs-paper-title"></div>
-                <div style="font-size:0.78rem;color:var(--text3);margin-top:3px;" id="qs-paper-meta"></div>
-              </div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <button class="btn btn-success btn-sm" id="qs-publish-btn" onclick="togglePublish()"></button>
-                <button class="btn btn-ghost btn-sm" onclick="copyPaperUrl()">🔗 Copy URL</button>
-                <button class="btn btn-primary btn-sm" onclick="openNewQuestionForm()">＋ Add question</button>
-              </div>
+            <div class="card-title">Grade boundaries — minimum % for each grade</div>
+            <div class="boundaries-grid">
+              <div class="boundary-cell"><label>Grade 1</label><input type="number" id="gb-1" min="0" max="100" placeholder="0"></div>
+              <div class="boundary-cell"><label>Grade 2</label><input type="number" id="gb-2" min="0" max="100" placeholder="10"></div>
+              <div class="boundary-cell"><label>Grade 3</label><input type="number" id="gb-3" min="0" max="100" placeholder="20"></div>
+              <div class="boundary-cell"><label>Grade 4</label><input type="number" id="gb-4" min="0" max="100" placeholder="30"></div>
+              <div class="boundary-cell"><label>Grade 5</label><input type="number" id="gb-5" min="0" max="100" placeholder="40"></div>
+              <div class="boundary-cell"><label>Grade 6</label><input type="number" id="gb-6" min="0" max="100" placeholder="50"></div>
+              <div class="boundary-cell"><label>Grade 7</label><input type="number" id="gb-7" min="0" max="100" placeholder="60"></div>
+              <div class="boundary-cell"><label>Grade 8</label><input type="number" id="gb-8" min="0" max="100" placeholder="70"></div>
+              <div class="boundary-cell"><label>Grade 9</label><input type="number" id="gb-9" min="0" max="100" placeholder="85"></div>
             </div>
-
-            <!-- URL display -->
-            <div id="paper-url-display" style="display:none;margin-bottom:16px;">
-              <div class="url-display">
-                <code id="paper-url-text"></code>
-                <button class="btn btn-ghost btn-sm" onclick="copyPaperUrl()">Copy</button>
-              </div>
+            <div style="display:flex;gap:10px;margin-top:22px;">
+              <button class="btn btn-primary" onclick="savePaper()">Save paper</button>
+              <button class="btn btn-ghost"   onclick="closePaperForm()">Cancel</button>
             </div>
-
-            <!-- Question list -->
-            <div class="question-list" id="question-list"></div>
-
-            <!-- Question editor -->
-            <div id="question-editor" style="display:none;">
-              <div class="qe-header">
-                <h3 id="qe-title">New question</h3>
-                <div style="display:flex;gap:8px;">
-                  <button class="btn btn-primary btn-sm" onclick="saveQuestion()">Save question</button>
-                  <button class="btn btn-ghost btn-sm" onclick="closeQuestionEditor()">Cancel</button>
-                </div>
-              </div>
-              <div class="qe-body">
-                <input type="hidden" id="qe-id">
-                <div class="form-row">
-                  <div class="field">
-                    <label>Question number <span class="hint">for display</span></label>
-                    <input type="text" id="qe-num" placeholder="e.g. 6 or 6a">
-                  </div>
-                  <div class="field">
-                    <label>Display order <span class="hint">sort order in paper</span></label>
-                    <input type="number" id="qe-order" min="1" placeholder="e.g. 6">
-                  </div>
-                </div>
-                <div class="field">
-                  <label>Question text <span class="hint">HTML allowed: &lt;b&gt;, &lt;i&gt;, &lt;sup&gt;, &lt;sub&gt;, &lt;br&gt;</span></label>
-                  <textarea id="qe-text" rows="4" placeholder="Enter the question text here. Use &lt;b&gt;bold&lt;/b&gt;, &lt;i&gt;italic&lt;/i&gt; etc."></textarea>
-                  <div class="rich-hint">Preview: <span id="qe-text-preview" style="color:var(--text2);"></span></div>
-                </div>
-                <div class="field">
-                  <label>Question image URL <span class="hint">optional — paste URL from image host</span></label>
-                  <input type="url" id="qe-img" placeholder="https://i.ibb.co/example.png">
-                </div>
-                <div class="field">
-                  <label>Maximum marks for this question</label>
-                  <input type="number" id="qe-maxmarks" min="1" max="20" placeholder="e.g. 4" oninput="syncMarkSlotCount()">
-                </div>
-
-                <hr class="divider">
-
-                <!-- Mark slots -->
-                <div class="mark-slots-section">
-                  <div class="mark-slots-header">
-                    <div>
-                      <div style="font-weight:600;font-size:0.9rem;margin-bottom:3px;">Mark scheme</div>
-                      <div style="font-size:0.78rem;color:var(--text3);">
-                        Each row is one mark. Enter a tag, then tick which answer options satisfy this criterion.
-                      </div>
-                    </div>
-                  </div>
-                  <div id="mark-slots-list"></div>
-                </div>
-
-                <hr class="divider">
-
-                <!-- Answer options -->
-                <div style="font-weight:600;font-size:0.9rem;margin-bottom:14px;">Answer options</div>
-                <div id="answer-editors">
-                  <!-- generated by renderAnswerEditors() -->
-                </div>
-
-              </div><!-- /qe-body -->
-            </div><!-- /question-editor -->
-          </div><!-- /questions-section -->
-        </div><!-- /content -->
-      </div><!-- /page-papers -->
-
-      <!-- ─── PAGE: Settings ─── -->
-      <div id="page-settings" class="screen" style="flex-direction:column;">
-        <div class="page-header">
-          <div class="page-header-left">
-            <h2>Settings</h2>
-            <p>App configuration and admin management.</p>
           </div>
         </div>
-        <div class="content">
-          <div class="card">
-            <div class="card-title">Script URL</div>
-            <p style="font-size:0.85rem;color:var(--text2);margin-bottom:14px;">
-              This is the Google Apps Script Web App URL that all frontend files use. Keep this safe.
-            </p>
-            <div class="url-display">
-              <code id="settings-script-url"></code>
+
+        <!-- Papers list -->
+        <div id="papers-list-wrap">
+          <div class="spinner-wrap"><div class="spinner"></div></div>
+        </div>
+
+        <!-- Questions section (shown after selecting a paper) -->
+        <div id="questions-section" style="display:none;">
+          <hr class="divider">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+            <div>
+              <div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;" id="qs-paper-title"></div>
+              <div style="font-size:0.78rem;color:var(--text3);margin-top:3px;" id="qs-paper-meta"></div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-sm" id="qs-publish-btn" onclick="togglePublish()"></button>
+              <button class="btn btn-ghost btn-sm" onclick="copyPaperUrl()">🔗 Copy URL</button>
+              <button class="btn btn-primary btn-sm" onclick="openNewQuestionForm()">＋ Add question</button>
             </div>
           </div>
-          <div class="card">
-            <div class="card-title">About</div>
-            <p style="font-size:0.85rem;color:var(--text2);line-height:1.7;">
-              GCSE Practice Admin Panel. Papers and questions are stored in Google Sheets.
-              Results are emailed via Gmail through Google Apps Script.
-              Built for non-profit educational use.
-            </p>
+          <div id="paper-url-display" style="display:none;margin-bottom:16px;">
+            <div class="url-display">
+              <code id="paper-url-text"></code>
+              <button class="btn btn-ghost btn-sm" onclick="copyPaperUrl()">Copy</button>
+            </div>
+          </div>
+          <div class="question-list" id="question-list"></div>
+
+          <!-- Question editor -->
+          <div id="question-editor" style="display:none;">
+            <div class="qe-header">
+              <h3 id="qe-title">New question</h3>
+              <div style="display:flex;gap:8px;">
+                <button class="btn btn-primary btn-sm" onclick="saveQuestion()">Save question</button>
+                <button class="btn btn-ghost btn-sm"   onclick="closeQuestionEditor()">Cancel</button>
+              </div>
+            </div>
+            <div class="qe-body">
+              <input type="hidden" id="qe-id">
+              <div class="form-row">
+                <div class="field">
+                  <label>Question number <span class="hint">for display e.g. 6 or 6a</span></label>
+                  <input type="text" id="qe-num" placeholder="e.g. 1">
+                </div>
+                <div class="field">
+                  <label>Display order <span class="hint">sort position in paper</span></label>
+                  <input type="number" id="qe-order" min="1" placeholder="e.g. 1">
+                </div>
+              </div>
+              <div class="field">
+                <label>Question text <span class="hint">HTML allowed: &lt;b&gt; &lt;i&gt; &lt;sup&gt; &lt;sub&gt; &lt;br&gt;</span></label>
+                <textarea id="qe-text" rows="4" placeholder="Enter the question text here…"></textarea>
+                <div class="rich-hint">Preview: <span id="qe-text-preview" style="color:var(--text2);"></span></div>
+              </div>
+              <div class="field">
+                <label>Question image URL <span class="hint">optional</span></label>
+                <input type="url" id="qe-img" placeholder="https://i.ibb.co/example.png">
+              </div>
+              <div class="field">
+                <label>Maximum marks for this question</label>
+                <input type="number" id="qe-maxmarks" min="1" max="20" placeholder="e.g. 4" oninput="syncMarkSlotCount()">
+              </div>
+
+              <hr class="divider">
+              <div class="mark-slots-section">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
+                  <div>
+                    <div style="font-weight:600;font-size:0.9rem;margin-bottom:3px;">Mark scheme</div>
+                    <div style="font-size:0.78rem;color:var(--text3);">One row per mark. Enter a tag then tick which answers satisfy this criterion.</div>
+                  </div>
+                </div>
+                <div id="mark-slots-list"></div>
+              </div>
+
+              <hr class="divider">
+              <div style="font-weight:600;font-size:0.9rem;margin-bottom:14px;">Answer options</div>
+              <div id="answer-editors"></div>
+            </div>
           </div>
         </div>
       </div>
+    </div><!-- /page-papers -->
 
-    </div><!-- /main -->
-  </div><!-- /app -->
-</div><!-- /screen-app -->
+    <!-- ── PAGE: Settings ── -->
+    <div id="page-settings" class="page">
+      <div class="page-header">
+        <div>
+          <h2>Settings</h2>
+          <p>App configuration reference.</p>
+        </div>
+      </div>
+      <div class="content">
+        <div class="card">
+          <div class="card-title">Apps Script URL</div>
+          <p style="font-size:0.85rem;color:var(--text2);margin-bottom:14px;">
+            This is the Google Apps Script Web App URL used by all frontend files.
+          </p>
+          <div class="url-display">
+            <code id="settings-script-url"></code>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">About</div>
+          <p style="font-size:0.85rem;color:var(--text2);line-height:1.7;">
+            GCSE Practice Admin Panel. Papers and questions are stored in Google Sheets.
+            Results are emailed via Gmail through Google Apps Script.
+            Built for non-profit educational use.
+          </p>
+        </div>
+      </div>
+    </div><!-- /page-settings -->
+
+  </div><!-- /main -->
+</div><!-- /view-app -->
 
 <script>
-// ═══════════════════════════════════════════════════════
-// CONFIG — replace with your deployed Apps Script URL
-// ═══════════════════════════════════════════════════════
-const SCRIPT_URL  = 'https://script.google.com/macros/s/AKfycbwID9BLIcBoggLZVt3RjqV_P7kqYrliCPoK6WVf-hdqDqsjNlDH1Eo1OSx37aV7eIBW/exec';
-const QUIZ_BASE   = 'https://rexhelltreader.github.io/gcse-practice/quiz.html'; // e.g. https://yourusername.github.io/gcse-practice/quiz.html
+// ════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwID9BLIcBoggLZVt3RjqV_P7kqYrliCPoK6WVf-hdqDqsjNlDH1Eo1OSx37aV7eIBW/exec';
+const QUIZ_BASE  = 'https://rexhelltreader.github.io/gcse-practice/quiz.html';
 
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 let adminEmail     = '';
 let adminName      = '';
 let allPapers      = [];
@@ -844,29 +789,34 @@ let selectedPaperQuestions = [];
 let editingQuestionId = null;
 let confirmCallback = null;
 
-// ═══════════════════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════════════════
-function showScreen(id) {
-  // Only toggle top-level screens, not inner page panels
-  ['screen-login', 'screen-app'].forEach(sid => {
-    document.getElementById(sid).classList.remove('active');
-  });
-  document.getElementById(id).classList.add('active');
+// ════════════════════════════════════════════════
+// VIEW / PAGE SWITCHING
+// ════════════════════════════════════════════════
+function showLogin() {
+  document.getElementById('view-login').style.display = 'flex';
+  document.getElementById('view-app').style.display   = 'none';
 }
 
-function gotoPage(page) {
-  ['page-papers', 'page-settings'].forEach(pid => {
-    const el = document.getElementById(pid);
-    if (el) el.classList.remove('active');
-  });
+function showApp() {
+  document.getElementById('view-login').style.display = 'none';
+  document.getElementById('view-app').style.display   = 'flex';
+}
+
+function gotoPage(name) {
+  // Hide all inner pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  // Deactivate all nav items
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const pageEl = document.getElementById('page-' + page);
-  const navEl  = document.getElementById('nav-' + page);
-  if (pageEl) pageEl.classList.add('active');
-  if (navEl)  navEl.classList.add('active');
+  // Show the requested page
+  const page = document.getElementById('page-' + name);
+  const nav  = document.getElementById('nav-' + name);
+  if (page) page.classList.add('active');
+  if (nav)  nav.classList.add('active');
 }
 
+// ════════════════════════════════════════════════
+// API
+// ════════════════════════════════════════════════
 async function apiGet(params) {
   const url = SCRIPT_URL + '?' + new URLSearchParams(params);
   const res = await fetch(url);
@@ -881,32 +831,34 @@ async function apiPost(body) {
   return res.json();
 }
 
-function toast(msg, type='ok') {
+// ════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════
+function toast(msg, type = 'ok') {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.className = 'show toast-' + type;
-  setTimeout(() => el.className = '', 3000);
+  setTimeout(() => { el.className = ''; }, 3000);
 }
 
-function confirm_(title, msg, okLabel='Delete') {
+// ════════════════════════════════════════════════
+// CONFIRM DIALOG
+// ════════════════════════════════════════════════
+function confirm_(title, msg, okLabel = 'Delete') {
   return new Promise(resolve => {
-    document.getElementById('confirm-title').textContent = title;
-    document.getElementById('confirm-msg').textContent   = msg;
-    document.getElementById('confirm-ok-btn').textContent = okLabel;
+    document.getElementById('confirm-title').textContent    = title;
+    document.getElementById('confirm-msg').textContent      = msg;
+    document.getElementById('confirm-ok-btn').textContent   = okLabel;
     document.getElementById('confirm-overlay').classList.add('open');
     confirmCallback = resolve;
   });
 }
-function confirmOk()    { document.getElementById('confirm-overlay').classList.remove('open'); confirmCallback && confirmCallback(true); }
-function confirmCancel(){ document.getElementById('confirm-overlay').classList.remove('open'); confirmCallback && confirmCallback(false); }
+function confirmOk()    { document.getElementById('confirm-overlay').classList.remove('open'); if (confirmCallback) confirmCallback(true); }
+function confirmCancel(){ document.getElementById('confirm-overlay').classList.remove('open'); if (confirmCallback) confirmCallback(false); }
 
-function stripHtml(html) {
-  const d = document.createElement('div'); d.innerHTML = html; return d.textContent || '';
-}
-
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // AUTH
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 async function doAdminLogin() {
   const email = document.getElementById('login-email').value.trim();
   const msgEl = document.getElementById('login-msg');
@@ -915,7 +867,6 @@ async function doAdminLogin() {
     return;
   }
   msgEl.innerHTML = '<p style="color:var(--text3);font-size:0.82rem;">Checking…</p>';
-
   try {
     const res = await apiPost({ action: 'checkAdmin', email });
     if (res.success) {
@@ -925,30 +876,40 @@ async function doAdminLogin() {
       document.getElementById('sidebar-email').textContent = adminEmail;
       document.getElementById('settings-script-url').textContent = SCRIPT_URL;
       msgEl.innerHTML = '';
-      showScreen('screen-app');
-	gotoPage('papers'); 
+      showApp();
+      gotoPage('papers');
       loadPapers();
     } else {
-      msgEl.innerHTML = '<p class="error-msg">Access denied. This email address is not listed as an admin.</p>';
+      msgEl.innerHTML = '<p class="error-msg">Access denied. This email is not listed as an admin.</p>';
     }
   } catch(e) {
-    msgEl.innerHTML = '<p class="error-msg">Could not reach the server. Check your Script URL.</p>';
+    msgEl.innerHTML = '<p class="error-msg">Could not reach the server. Please check your Script URL.</p>';
   }
 }
-// ═══════════════════════════════════════════════════════
+
+function adminSignOut() {
+  adminEmail = '';
+  adminName  = '';
+  allPapers  = [];
+  selectedPaper = null;
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-msg').innerHTML = '';
+  showLogin();
+}
+
+// ════════════════════════════════════════════════
 // PAPERS
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 async function loadPapers() {
   document.getElementById('papers-list-wrap').innerHTML =
     '<div class="spinner-wrap"><div class="spinner"></div></div>';
-
   try {
     const data = await apiGet({ action: 'getAllPapers', admin_email: adminEmail });
-allPapers = Array.isArray(data) ? data : [];
+    allPapers = Array.isArray(data) ? data : [];
     renderPapersList();
   } catch(e) {
     document.getElementById('papers-list-wrap').innerHTML =
-      '<p class="error-msg" style="padding:20px;">Could not load papers.</p>';
+      '<p class="error-msg" style="padding:20px;">Could not load papers. Check your Script URL and redeployment.</p>';
   }
 }
 
@@ -957,56 +918,164 @@ function renderPapersList() {
   if (!allPapers.length) {
     wrap.innerHTML = `<div class="empty-state">
       <div class="icon">📄</div>
-      <p>No papers yet. Create your first paper above.</p>
+      <p>No papers yet. Click <strong>New paper</strong> above to create your first one.</p>
     </div>`;
     return;
   }
-
-  wrap.innerHTML = `<div class="paper-list">${allPapers.map(p => `
-    <div class="paper-row ${selectedPaper && selectedPaper.paper_id === p.paper_id ? 'selected' : ''}"
-         onclick="selectPaper('${p.paper_id}')">
+  const rows = allPapers.map(p => {
+    const isPublished = p.is_published === true || p.is_published === 'TRUE';
+    const isSelected  = selectedPaper && selectedPaper.paper_id === p.paper_id;
+    return `<div class="paper-row ${isSelected ? 'selected' : ''}" onclick="selectPaper('${p.paper_id}')">
       <div class="paper-row-info">
         <div class="paper-row-title">${p.title}</div>
-        <div class="paper-row-meta">${p.subject || ''} ${p.tier ? '· '+p.tier : ''} ${p.exam_board ? '· '+p.exam_board : ''} · ${p.total_marks} marks · ${Math.floor(p.time_limit_seconds/60)} min</div>
+        <div class="paper-row-meta">
+          ${[p.subject, p.tier, p.exam_board].filter(Boolean).join(' · ')}
+          · ${p.total_marks || 0} marks
+          · ${p.time_limit_seconds ? Math.floor(p.time_limit_seconds/60) + ' min' : '—'}
+        </div>
       </div>
       <div class="paper-row-actions">
-        <span class="badge ${p.is_published === true || p.is_published === 'TRUE' ? 'badge-green' : 'badge-grey'}">
-          ${p.is_published === true || p.is_published === 'TRUE' ? 'Published' : 'Draft'}
+        <span class="badge ${isPublished ? 'badge-green' : 'badge-grey'}">
+          ${isPublished ? 'Published' : 'Draft'}
         </span>
-        <button class="btn btn-ghost btn-sm btn-icon" title="Edit paper details"
-          onclick="event.stopPropagation();editPaper('${p.paper_id}')">✏️</button>
+        <button class="btn btn-ghost btn-sm btn-icon" title="Edit paper"
+          onclick="event.stopPropagation(); editPaper('${p.paper_id}')">✏️</button>
         <button class="btn btn-danger btn-sm btn-icon" title="Delete paper"
-          onclick="event.stopPropagation();deletePaper('${p.paper_id}')">🗑</button>
+          onclick="event.stopPropagation(); deletePaper('${p.paper_id}')">🗑</button>
       </div>
-    </div>`).join('')}
-  </div>`;
+    </div>`;
+  }).join('');
+  wrap.innerHTML = `<div class="paper-list">${rows}</div>`;
 }
 
 async function selectPaper(paper_id) {
-  const paper = allPapers.find(p => p.paper_id === paper_id);
-  if (!paper) return;
-  selectedPaper = paper;
+  selectedPaper = allPapers.find(p => p.paper_id === paper_id) || null;
+  if (!selectedPaper) return;
   renderPapersList();
 
-  document.getElementById('questions-section').style.display = '';
-  document.getElementById('qs-paper-title').textContent = paper.title;
-  document.getElementById('qs-paper-meta').textContent =
-    `${paper.subject || ''} ${paper.tier ? '· '+paper.tier : ''} ${paper.exam_board ? '· '+paper.exam_board : ''}`;
+  const isPublished = selectedPaper.is_published === true || selectedPaper.is_published === 'TRUE';
+  document.getElementById('qs-paper-title').textContent = selectedPaper.title;
+  document.getElementById('qs-paper-meta').textContent  =
+    [selectedPaper.subject, selectedPaper.tier, selectedPaper.exam_board].filter(Boolean).join(' · ');
 
   const pubBtn = document.getElementById('qs-publish-btn');
-  const isPublished = paper.is_published === true || paper.is_published === 'TRUE';
   pubBtn.textContent = isPublished ? '⬛ Unpublish' : '✅ Publish';
   pubBtn.className   = isPublished ? 'btn btn-ghost btn-sm' : 'btn btn-success btn-sm';
 
-  // Paper URL
-  const urlEl = document.getElementById('paper-url-text');
-  urlEl.textContent = `${QUIZ_BASE}?paper=${paper.paper_id}`;
+  document.getElementById('paper-url-text').textContent = `${QUIZ_BASE}?paper=${selectedPaper.paper_id}`;
   document.getElementById('paper-url-display').style.display = '';
+  document.getElementById('questions-section').style.display = '';
 
   closeQuestionEditor();
   await loadQuestions(paper_id);
 }
 
+function openNewPaperForm() {
+  document.getElementById('paper-form-title').textContent = 'New paper';
+  document.getElementById('pf-id').value = '';
+  ['pf-title','pf-subject','pf-tier','pf-board','pf-difficulty','pf-time','pf-marks'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  for (let i = 1; i <= 9; i++) document.getElementById('gb-' + i).value = '';
+  document.getElementById('paper-form-wrap').style.display = '';
+  document.getElementById('paper-form-wrap').scrollIntoView({ behavior: 'smooth' });
+}
+
+function closePaperForm() {
+  document.getElementById('paper-form-wrap').style.display = 'none';
+}
+
+function editPaper(paper_id) {
+  const p = allPapers.find(x => x.paper_id === paper_id);
+  if (!p) return;
+  document.getElementById('paper-form-title').textContent = 'Edit paper';
+  document.getElementById('pf-id').value         = p.paper_id;
+  document.getElementById('pf-title').value      = p.title || '';
+  document.getElementById('pf-subject').value    = p.subject || '';
+  document.getElementById('pf-tier').value       = p.tier || '';
+  document.getElementById('pf-board').value      = p.exam_board || '';
+  document.getElementById('pf-difficulty').value = p.difficulty_label || '';
+  document.getElementById('pf-time').value       = p.time_limit_seconds ? Math.floor(p.time_limit_seconds / 60) : '';
+  document.getElementById('pf-marks').value      = p.total_marks || '';
+  document.getElementById('paper-form-wrap').style.display = '';
+  document.getElementById('paper-form-wrap').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function savePaper() {
+  const title = document.getElementById('pf-title').value.trim();
+  if (!title) { toast('Please enter a title.', 'err'); return; }
+  const id = document.getElementById('pf-id').value;
+  const body = {
+    action:             'savePaper',
+    admin_email:        adminEmail,
+    paper_id:           id || undefined,
+    title,
+    subject:            document.getElementById('pf-subject').value.trim(),
+    tier:               document.getElementById('pf-tier').value,
+    exam_board:         document.getElementById('pf-board').value.trim(),
+    difficulty_label:   document.getElementById('pf-difficulty').value.trim(),
+    time_limit_seconds: (parseInt(document.getElementById('pf-time').value) || 0) * 60,
+    total_marks:        parseInt(document.getElementById('pf-marks').value) || 0
+  };
+  const res = await apiPost(body);
+  if (!res.success) { toast('Error: ' + (res.error || 'unknown'), 'err'); return; }
+
+  const gbBody = { action: 'saveGradeBoundaries', admin_email: adminEmail, paper_id: res.paper_id };
+  for (let i = 1; i <= 9; i++) gbBody[`grade_${i}_min`] = parseInt(document.getElementById('gb-' + i).value) || 0;
+  await apiPost(gbBody);
+
+  toast(id ? 'Paper updated.' : 'Paper created.', 'ok');
+  closePaperForm();
+  await loadPapers();
+}
+
+async function deletePaper(paper_id) {
+  const paper = allPapers.find(p => p.paper_id === paper_id);
+  const ok = await confirm_(
+    'Delete paper?',
+    `"${paper ? paper.title : paper_id}" and all its questions will be permanently deleted.`,
+    'Delete paper'
+  );
+  if (!ok) return;
+  const res = await apiPost({ action: 'deletePaper', admin_email: adminEmail, paper_id });
+  if (res.success) {
+    toast('Paper deleted.', 'ok');
+    if (selectedPaper && selectedPaper.paper_id === paper_id) {
+      selectedPaper = null;
+      document.getElementById('questions-section').style.display = 'none';
+    }
+    await loadPapers();
+  } else {
+    toast('Error: ' + (res.error || 'unknown'), 'err');
+  }
+}
+
+async function togglePublish() {
+  if (!selectedPaper) return;
+  const isPublished = selectedPaper.is_published === true || selectedPaper.is_published === 'TRUE';
+  const res = await apiPost({
+    action:       'publishPaper',
+    admin_email:  adminEmail,
+    paper_id:     selectedPaper.paper_id,
+    is_published: !isPublished
+  });
+  if (res.success) {
+    toast(isPublished ? 'Paper unpublished.' : 'Paper published!', 'ok');
+    await loadPapers();
+    await selectPaper(selectedPaper.paper_id);
+  } else {
+    toast('Error: ' + (res.error || 'unknown'), 'err');
+  }
+}
+
+function copyPaperUrl() {
+  const url = document.getElementById('paper-url-text').textContent;
+  navigator.clipboard.writeText(url).then(() => toast('URL copied to clipboard.', 'ok'));
+}
+
+// ════════════════════════════════════════════════
+// QUESTIONS
+// ════════════════════════════════════════════════
 async function loadQuestions(paper_id) {
   document.getElementById('question-list').innerHTML =
     '<div class="spinner-wrap" style="padding:24px 0;"><div class="spinner"></div></div>';
@@ -1023,14 +1092,13 @@ async function loadQuestions(paper_id) {
 function renderQuestionList() {
   const el = document.getElementById('question-list');
   if (!selectedPaperQuestions.length) {
-    el.innerHTML = `<div class="empty-state" style="padding:24px;">
+    el.innerHTML = `<div class="empty-state" style="padding:24px 0;">
       <p>No questions yet. Click <strong>Add question</strong> to get started.</p>
     </div>`;
     return;
   }
-  el.innerHTML = selectedPaperQuestions
-    .sort((a,b) => Number(a.display_order) - Number(b.display_order))
-    .map(q => `
+  const sorted = [...selectedPaperQuestions].sort((a,b) => Number(a.display_order) - Number(b.display_order));
+  el.innerHTML = sorted.map(q => `
     <div class="question-row ${editingQuestionId === q.question_id ? 'editing' : ''}">
       <span class="q-num">Q${q.question_number}</span>
       <span class="q-preview">${stripHtml(q.question_text_html) || '[Image question]'}</span>
@@ -1042,158 +1110,50 @@ function renderQuestionList() {
     </div>`).join('');
 }
 
-// ─── Paper form ───
-function openNewPaperForm() {
-  document.getElementById('paper-form-title').textContent = 'New paper';
-  document.getElementById('pf-id').value = '';
-  ['title','subject','tier','board','difficulty','time','marks'].forEach(f =>
-    { const el = document.getElementById('pf-'+f); if(el) el.value=''; });
-  for(let i=1;i<=9;i++) document.getElementById('gb-'+i).value = '';
-  document.getElementById('paper-form-wrap').style.display = '';
-  document.getElementById('paper-form-wrap').scrollIntoView({ behavior:'smooth' });
+function stripHtml(html) {
+  const d = document.createElement('div');
+  d.innerHTML = html || '';
+  return d.textContent || '';
 }
 
-function closePaperForm() { document.getElementById('paper-form-wrap').style.display = 'none'; }
-
-function editPaper(paper_id) {
-  const p = allPapers.find(x => x.paper_id === paper_id);
-  if (!p) return;
-  document.getElementById('paper-form-title').textContent = 'Edit paper';
-  document.getElementById('pf-id').value         = p.paper_id;
-  document.getElementById('pf-title').value      = p.title || '';
-  document.getElementById('pf-subject').value    = p.subject || '';
-  document.getElementById('pf-tier').value       = p.tier || '';
-  document.getElementById('pf-board').value      = p.exam_board || '';
-  document.getElementById('pf-difficulty').value = p.difficulty_label || '';
-  document.getElementById('pf-time').value       = p.time_limit_seconds ? Math.floor(p.time_limit_seconds/60) : '';
-  document.getElementById('pf-marks').value      = p.total_marks || '';
-  // Grade boundaries would need a separate load — skipped for brevity, handled on save
-  document.getElementById('paper-form-wrap').style.display = '';
-  document.getElementById('paper-form-wrap').scrollIntoView({ behavior:'smooth' });
-}
-
-async function savePaper() {
-  const id      = document.getElementById('pf-id').value;
-  const title   = document.getElementById('pf-title').value.trim();
-  const subject = document.getElementById('pf-subject').value.trim();
-  if (!title) { toast('Please enter a title.','err'); return; }
-
-  const body = {
-    action:           'savePaper',
-    admin_email:      adminEmail,
-    paper_id:         id || undefined,
-    title,
-    subject,
-    tier:             document.getElementById('pf-tier').value,
-    exam_board:       document.getElementById('pf-board').value.trim(),
-    difficulty_label: document.getElementById('pf-difficulty').value.trim(),
-    time_limit_seconds: (parseInt(document.getElementById('pf-time').value)||0) * 60,
-    total_marks:      parseInt(document.getElementById('pf-marks').value)||0
-  };
-
-  const res = await apiPost(body);
-  if (!res.success) { toast('Error: ' + (res.error||'unknown'),'err'); return; }
-
-  // Save grade boundaries
-  const gbBody = {
-    action:       'saveGradeBoundaries',
-    admin_email:  adminEmail,
-    paper_id:     res.paper_id
-  };
-  for(let i=1;i<=9;i++) {
-    gbBody[`grade_${i}_min`] = parseInt(document.getElementById('gb-'+i).value)||0;
-  }
-  await apiPost(gbBody);
-
-  toast(id ? 'Paper updated.' : 'Paper created.','ok');
-  closePaperForm();
-  await loadPapers();
-}
-
-async function deletePaper(paper_id) {
-  const paper = allPapers.find(p => p.paper_id === paper_id);
-  const ok = await confirm_(
-    'Delete paper?',
-    `"${paper ? paper.title : paper_id}" and all its questions will be permanently deleted.`,
-    'Delete paper'
-  );
-  if (!ok) return;
-  const res = await apiPost({ action: 'deletePaper', admin_email: adminEmail, paper_id });
-  if (res.success) {
-    toast('Paper deleted.','ok');
-    if (selectedPaper && selectedPaper.paper_id === paper_id) {
-      selectedPaper = null;
-      document.getElementById('questions-section').style.display = 'none';
-    }
-    loadPapers();
-  } else {
-    toast('Error: ' + (res.error||'unknown'),'err');
-  }
-}
-
-async function togglePublish() {
-  if (!selectedPaper) return;
-  const isPublished = selectedPaper.is_published === true || selectedPaper.is_published === 'TRUE';
-  const res = await apiPost({
-    action:       'publishPaper',
-    admin_email:  adminEmail,
-    paper_id:     selectedPaper.paper_id,
-    is_published: !isPublished
-  });
-  if (res.success) {
-    toast(isPublished ? 'Paper unpublished.' : 'Paper published!','ok');
-    await loadPapers();
-    selectPaper(selectedPaper.paper_id);
-  } else {
-    toast('Error: ' + (res.error||'unknown'),'err');
-  }
-}
-
-function copyPaperUrl() {
-  const url = document.getElementById('paper-url-text').textContent;
-  navigator.clipboard.writeText(url).then(() => toast('URL copied to clipboard.','ok'));
-}
-
-// ═══════════════════════════════════════════════════════
-// QUESTION EDITOR
-// ═══════════════════════════════════════════════════════
 function openNewQuestionForm() {
   editingQuestionId = null;
-  document.getElementById('qe-title').textContent = 'New question';
-  document.getElementById('qe-id').value    = '';
-  document.getElementById('qe-num').value   = '';
-  document.getElementById('qe-order').value = selectedPaperQuestions.length + 1;
-  document.getElementById('qe-text').value  = '';
-  document.getElementById('qe-img').value   = '';
-  document.getElementById('qe-maxmarks').value = '';
+  document.getElementById('qe-title').textContent   = 'New question';
+  document.getElementById('qe-id').value            = '';
+  document.getElementById('qe-num').value           = '';
+  document.getElementById('qe-order').value         = selectedPaperQuestions.length + 1;
+  document.getElementById('qe-text').value          = '';
+  document.getElementById('qe-img').value           = '';
+  document.getElementById('qe-maxmarks').value      = '';
   document.getElementById('qe-text-preview').innerHTML = '';
-  renderMarkSlots([]);
-  renderAnswerEditors({});
+  renderMarkSlots([], []);
+  renderAnswerEditors({}, []);
   document.getElementById('question-editor').style.display = '';
-  document.getElementById('question-editor').scrollIntoView({ behavior:'smooth' });
+  document.getElementById('question-editor').scrollIntoView({ behavior: 'smooth' });
 }
 
 function editQuestion(question_id) {
   const q = selectedPaperQuestions.find(x => x.question_id === question_id);
   if (!q) return;
   editingQuestionId = question_id;
-  document.getElementById('qe-title').textContent = `Edit question ${q.question_number}`;
-  document.getElementById('qe-id').value        = q.question_id;
-  document.getElementById('qe-num').value        = q.question_number;
-  document.getElementById('qe-order').value      = q.display_order;
-  document.getElementById('qe-text').value       = q.question_text_html || '';
-  document.getElementById('qe-img').value        = q.question_image_url || '';
-  document.getElementById('qe-maxmarks').value   = q.max_marks;
+  document.getElementById('qe-title').textContent      = `Edit question ${q.question_number}`;
+  document.getElementById('qe-id').value               = q.question_id;
+  document.getElementById('qe-num').value              = q.question_number;
+  document.getElementById('qe-order').value            = q.display_order;
+  document.getElementById('qe-text').value             = q.question_text_html || '';
+  document.getElementById('qe-img').value              = q.question_image_url || '';
+  document.getElementById('qe-maxmarks').value         = q.max_marks;
   document.getElementById('qe-text-preview').innerHTML = q.question_text_html || '';
   renderMarkSlots(q.slots || [], q.answerMarks || []);
-  renderAnswerEditors({
-    a: { html: q.answer_a_html||'', img: q.answer_a_image_url||'', feedback: '' },
-    b: { html: q.answer_b_html||'', img: q.answer_b_image_url||'', feedback: '' },
-    c: { html: q.answer_c_html||'', img: q.answer_c_image_url||'', feedback: '' },
-    d: { html: q.answer_d_html||'', img: q.answer_d_image_url||'', feedback: '' },
-  }, q.feedback || []);
+  renderAnswerEditors(
+    { a: { html: q.answer_a_html||'', img: q.answer_a_image_url||'' },
+      b: { html: q.answer_b_html||'', img: q.answer_b_image_url||'' },
+      c: { html: q.answer_c_html||'', img: q.answer_c_image_url||'' },
+      d: { html: q.answer_d_html||'', img: q.answer_d_image_url||'' } },
+    q.feedback || []
+  );
   document.getElementById('question-editor').style.display = '';
-  document.getElementById('question-editor').scrollIntoView({ behavior:'smooth' });
+  document.getElementById('question-editor').scrollIntoView({ behavior: 'smooth' });
   renderQuestionList();
 }
 
@@ -1203,83 +1163,70 @@ function closeQuestionEditor() {
   renderQuestionList();
 }
 
-// Live preview of question text
+// Live preview
 document.addEventListener('input', e => {
   if (e.target.id === 'qe-text') {
     document.getElementById('qe-text-preview').innerHTML = e.target.value;
   }
 });
 
-// ─── Mark slots ───
+// ── Mark slots ──
 function syncMarkSlotCount() {
   const count = parseInt(document.getElementById('qe-maxmarks').value) || 0;
-  const existing = document.querySelectorAll('.slot-row');
-  if (count === existing.length) return;
-  // Rebuild slots, preserving existing data
-  const currentSlots = collectSlots();
-  const newSlots = [];
+  const current = collectSlots();
+  const rebuilt = [];
   for (let i = 0; i < count; i++) {
-    newSlots.push(currentSlots[i] || { tag: '', satisfied_by: [] });
+    rebuilt.push(current[i] || { slot_id: 'new_' + i, slot_number: i+1, tag: '', satisfied_by: [] });
   }
-  renderMarkSlots(newSlots.map((s,i) => ({
-    slot_id: `new_${i}`,
-    slot_number: i+1,
-    tag: s.tag
-  })), [], newSlots.map(s => s.satisfied_by));
+  renderMarkSlots(
+    rebuilt.map((s,i) => ({ slot_id: s.slot_id, slot_number: i+1, tag: s.tag })),
+    [],
+    rebuilt.map(s => s.satisfied_by)
+  );
 }
 
 function renderMarkSlots(slots, answerMarks, satisfiedOverride) {
   const container = document.getElementById('mark-slots-list');
   const count = parseInt(document.getElementById('qe-maxmarks').value) || slots.length;
-
-  // Build a set of rows
   let html = '';
   for (let i = 0; i < Math.max(count, slots.length); i++) {
-    const slot = slots[i] || { slot_id: `new_${i}`, slot_number: i+1, tag: '' };
+    const slot   = slots[i] || { slot_id: 'new_' + i, slot_number: i+1, tag: '' };
     const slotId = slot.slot_id;
-
     const satisfiedAnswers = satisfiedOverride
       ? (satisfiedOverride[i] || [])
       : ['a','b','c','d'].filter(opt =>
-          (answerMarks||[]).some(m =>
+          (answerMarks || []).some(m =>
             m.slot_id === slotId && m.answer_option === opt &&
             (m.is_satisfied === 'TRUE' || m.is_satisfied === true)
           )
         );
-
     html += `<div class="slot-row" data-slot-index="${i}" data-slot-id="${slotId}">
       <span class="slot-num">${i+1}.</span>
-      <input type="text" class="slot-tag-input" placeholder="Mark criterion tag e.g. Correct units"
-             value="${slot.tag || ''}" style="background:var(--surface3);border:1px solid var(--border);
-             color:var(--text);padding:7px 10px;border-radius:6px;font-size:0.85rem;">
+      <input type="text" class="slot-tag-input"
+             style="flex:1;background:var(--surface3);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:6px;font-size:0.85rem;"
+             placeholder="Mark criterion e.g. Correct units" value="${slot.tag || ''}">
       <div class="slot-checkboxes">
         ${['A','B','C','D'].map(letter => {
           const lc = letter.toLowerCase();
           const checked = satisfiedAnswers.includes(lc);
-          return `<label class="slot-check-label ${checked ? 'checked' : ''}" title="Answer ${letter} satisfies this mark">
+          return `<label class="slot-check-label ${checked ? 'checked' : ''}">
             <input type="checkbox" ${checked ? 'checked' : ''} data-slot="${i}" data-answer="${lc}"
-                   onchange="toggleSlotCheck(this)">
+                   onchange="this.closest('label').classList.toggle('checked', this.checked)">
             ${letter}
           </label>`;
         }).join('')}
       </div>
-      <button class="slot-delete" title="Remove mark" onclick="removeSlotRow(this)">✕</button>
+      <button class="slot-delete" onclick="removeSlotRow(this)" title="Remove this mark">✕</button>
     </div>`;
   }
-
   if (!html) {
-    html = '<p style="font-size:0.82rem;color:var(--text3);padding:8px 0;">Set the maximum marks field above to generate mark slots.</p>';
+    html = '<p style="font-size:0.82rem;color:var(--text3);padding:8px 0;">Enter a number in the Maximum marks field above to generate mark rows.</p>';
   }
   container.innerHTML = html;
 }
 
-function toggleSlotCheck(cb) {
-  cb.parentElement.classList.toggle('checked', cb.checked);
-}
-
 function removeSlotRow(btn) {
   btn.closest('.slot-row').remove();
-  // Re-number
   document.querySelectorAll('.slot-row').forEach((row, i) => {
     row.querySelector('.slot-num').textContent = (i+1) + '.';
     row.dataset.slotIndex = i;
@@ -1292,30 +1239,20 @@ function collectSlots() {
   document.querySelectorAll('.slot-row').forEach((row, i) => {
     const tag = row.querySelector('.slot-tag-input').value.trim();
     const satisfied_by = [];
-    row.querySelectorAll('input[type=checkbox]:checked').forEach(cb => {
-      satisfied_by.push(cb.dataset.answer);
-    });
-    slots.push({
-      slot_id:    row.dataset.slotId,
-      slot_number: i+1,
-      tag,
-      satisfied_by
-    });
+    row.querySelectorAll('input[type=checkbox]:checked').forEach(cb => satisfied_by.push(cb.dataset.answer));
+    slots.push({ slot_id: row.dataset.slotId, slot_number: i+1, tag, satisfied_by });
   });
   return slots;
 }
 
-// ─── Answer editors ───
+// ── Answer editors ──
 function renderAnswerEditors(data, feedbackRows) {
-  const feedbackMap = {};
-  (feedbackRows||[]).forEach(f => feedbackMap[f.answer_option] = f.feedback_text);
-
-  const container = document.getElementById('answer-editors');
-  container.innerHTML = ['a','b','c','d'].map(letter => {
-    const d = data[letter] || {};
-    const fb = feedbackMap[letter] || d.feedback || '';
-    return `
-    <div class="answer-option-editor">
+  const fbMap = {};
+  (feedbackRows || []).forEach(f => { fbMap[f.answer_option] = f.feedback_text; });
+  document.getElementById('answer-editors').innerHTML = ['a','b','c','d'].map(letter => {
+    const d  = data[letter] || {};
+    const fb = fbMap[letter] || '';
+    return `<div class="answer-option-editor">
       <div class="answer-option-header">
         <div class="answer-letter-badge">${letter.toUpperCase()}</div>
         <strong style="font-size:0.88rem;">Answer ${letter.toUpperCase()}</strong>
@@ -1326,52 +1263,41 @@ function renderAnswerEditors(data, feedbackRows) {
       </div>
       <div class="field" style="margin-bottom:10px;">
         <label>Answer image URL <span class="hint">optional</span></label>
-        <input type="url" id="ae-${letter}-img" placeholder="https://…" value="${d.img||''}">
+        <input type="url" id="ae-${letter}-img" value="${d.img||''}" placeholder="https://…">
       </div>
       <div class="field" style="margin-bottom:0;">
-        <label>Feedback for students who choose this answer</label>
-        <textarea id="ae-${letter}-feedback" rows="2"
-          placeholder="e.g. Correct! / This answer misses the correct units…">${fb}</textarea>
+        <label>Feedback shown to students who choose this answer</label>
+        <textarea id="ae-${letter}-feedback" rows="2" placeholder="e.g. Correct! / This answer misses the correct units…">${fb}</textarea>
       </div>
     </div>`;
   }).join('');
 }
 
-// ─── Save question ───
+// ── Save question ──
 async function saveQuestion() {
   const paper_id = selectedPaper ? selectedPaper.paper_id : null;
-  if (!paper_id) { toast('No paper selected.','err'); return; }
-
+  if (!paper_id) { toast('No paper selected.', 'err'); return; }
   const qNum    = document.getElementById('qe-num').value.trim();
-  const qOrder  = parseInt(document.getElementById('qe-order').value)||1;
-  const qText   = document.getElementById('qe-text').value.trim();
-  const qImg    = document.getElementById('qe-img').value.trim();
-  const maxMarks= parseInt(document.getElementById('qe-maxmarks').value)||0;
+  const maxMarks= parseInt(document.getElementById('qe-maxmarks').value) || 0;
   const qId     = document.getElementById('qe-id').value;
-
-  if (!qNum) { toast('Please enter a question number.','err'); return; }
-  if (maxMarks < 1) { toast('Please set the maximum marks.','err'); return; }
-
+  if (!qNum)       { toast('Please enter a question number.', 'err'); return; }
+  if (maxMarks < 1){ toast('Please set the maximum marks.', 'err'); return; }
   const slots = collectSlots();
   if (slots.length !== maxMarks) {
-    toast(`Mark scheme has ${slots.length} rows but max marks is ${maxMarks}. Please match these.`,'err');
+    toast(`Mark scheme has ${slots.length} row(s) but max marks is ${maxMarks}. Please match these.`, 'err');
     return;
   }
-
   const feedback = {};
-  ['a','b','c','d'].forEach(l => {
-    feedback[l] = document.getElementById(`ae-${l}-feedback`).value.trim();
-  });
-
+  ['a','b','c','d'].forEach(l => { feedback[l] = document.getElementById(`ae-${l}-feedback`).value.trim(); });
   const body = {
     action:             'saveQuestion',
     admin_email:        adminEmail,
     question_id:        qId || undefined,
     paper_id,
     question_number:    qNum,
-    display_order:      qOrder,
-    question_text_html: qText,
-    question_image_url: qImg,
+    display_order:      parseInt(document.getElementById('qe-order').value) || 1,
+    question_text_html: document.getElementById('qe-text').value.trim(),
+    question_image_url: document.getElementById('qe-img').value.trim(),
     answer_a_html:      document.getElementById('ae-a-html').value.trim(),
     answer_a_image_url: document.getElementById('ae-a-img').value.trim(),
     answer_b_html:      document.getElementById('ae-b-html').value.trim(),
@@ -1384,14 +1310,13 @@ async function saveQuestion() {
     slots,
     feedback
   };
-
   const res = await apiPost(body);
   if (res.success) {
-    toast(qId ? 'Question updated.' : 'Question saved.','ok');
+    toast(qId ? 'Question updated.' : 'Question saved.', 'ok');
     closeQuestionEditor();
     await loadQuestions(paper_id);
   } else {
-    toast('Error: ' + (res.error||'unknown'),'err');
+    toast('Error: ' + (res.error || 'unknown'), 'err');
   }
 }
 
@@ -1405,11 +1330,11 @@ async function deleteQuestion(question_id) {
   if (!ok) return;
   const res = await apiPost({ action: 'deleteQuestion', admin_email: adminEmail, question_id });
   if (res.success) {
-    toast('Question deleted.','ok');
+    toast('Question deleted.', 'ok');
     if (editingQuestionId === question_id) closeQuestionEditor();
     await loadQuestions(selectedPaper.paper_id);
   } else {
-    toast('Error: ' + (res.error||'unknown'),'err');
+    toast('Error: ' + (res.error || 'unknown'), 'err');
   }
 }
 </script>
