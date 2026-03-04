@@ -998,7 +998,6 @@ function endSession() {
 // RESULTS
 // ═══════════════════════════════════════════
 function showResultsScreen(totalSeconds) {
-  // Calculate client-side totals for immediate display
   let marksAchieved = 0;
   let totalMarks    = 0;
   currentQuestions.forEach(q => {
@@ -1008,25 +1007,17 @@ function showResultsScreen(totalSeconds) {
   });
   const pct = totalMarks > 0 ? Math.round((marksAchieved / totalMarks) * 100) : 0;
 
-  // Grade (estimated client-side; server will confirm)
-  const grade = estimateGrade(pct);
-
-  // Grade circle colour
+  // Show score immediately but wait for server-confirmed grade
   const circle = document.getElementById('result-grade-circle');
-  circle.textContent = grade;
+  circle.textContent = '…';
   circle.className = 'grade-circle';
-  if (grade === 'U')              circle.classList.add('grade-u');
-  else if (Number(grade) <= 3)    circle.classList.add('grade-low');
-  else if (Number(grade) <= 6)    circle.classList.add('grade-mid');
-  else                            circle.classList.add('grade-high');
 
-  document.getElementById('result-pct').textContent    = `${pct}%`;
-  document.getElementById('result-marks').textContent  = `${marksAchieved} / ${totalMarks} marks`;
-  document.getElementById('result-time').textContent   = fmtTime(totalSeconds);
+  document.getElementById('result-pct').textContent   = `${pct}%`;
+  document.getElementById('result-marks').textContent = `${marksAchieved} / ${totalMarks} marks`;
+  document.getElementById('result-time').textContent  = fmtTime(totalSeconds);
   document.getElementById('result-remaining').textContent = fmtTime(Math.max(0, paperTimeRemaining));
-  document.getElementById('result-grade').textContent  = grade;
+  document.getElementById('result-grade').textContent = '…';
 
-  // If logged in, show auto-email section
   if (currentUser) {
     document.getElementById('email-section').style.display   = 'none';
     document.getElementById('email-prefilled').style.display = '';
@@ -1036,20 +1027,6 @@ function showResultsScreen(totalSeconds) {
   }
 
   showScreen('screen-results');
-}
-
-function estimateGrade(pct) {
-  // Rough estimate before server response; overridden by server grade
-  if (pct >= 90) return '9';
-  if (pct >= 80) return '8';
-  if (pct >= 70) return '7';
-  if (pct >= 60) return '6';
-  if (pct >= 50) return '5';
-  if (pct >= 40) return '4';
-  if (pct >= 30) return '3';
-  if (pct >= 20) return '2';
-  if (pct >= 10) return '1';
-  return 'U';
 }
 
 function addEmailField() {
@@ -1084,17 +1061,20 @@ async function submitResults() {
       report_emails:        emails
     });
 
-    if (res.success) {
-      // Update grade with server-confirmed value
-      document.getElementById('result-grade').textContent = res.grade || '—';
-      document.getElementById('result-grade-circle').textContent = res.grade || '—';
-      showScreen('screen-submitted');
-    } else {
-      msgEl.innerHTML = '<p class="error-msg">Something went wrong. Please try again.</p>';
-    }
-  } catch(e) {
-    msgEl.innerHTML = '<p class="error-msg">Network error. Please check your connection and try again.</p>';
-  }
+   if (res.success) {
+  const grade = res.grade || '—';
+  document.getElementById('result-grade').textContent = grade;
+  const circle = document.getElementById('result-grade-circle');
+  circle.textContent = grade;
+  circle.className = 'grade-circle';
+  if (grade === 'U')           circle.classList.add('grade-u');
+  else if (Number(grade) <= 3) circle.classList.add('grade-low');
+  else if (Number(grade) <= 6) circle.classList.add('grade-mid');
+  else                         circle.classList.add('grade-high');
+  showScreen('screen-submitted');
+} else {
+  msgEl.innerHTML = '<p class="error-msg">Something went wrong. Please try again.</p>';
+}
 }
 
 // ═══════════════════════════════════════════
