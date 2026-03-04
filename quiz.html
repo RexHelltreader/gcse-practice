@@ -975,16 +975,16 @@ function selectAnswer(btn, letter) {
     }
   });
 
-  const marksAwarded = satisfiedSlotIds.length;
-  const timeTaken    = Math.round((Date.now() - questionStartTime) / 1000);
+ const marksAwarded = satisfiedSlotIds.length;
 
-  // Overwrite any previous response for this question (answer may have changed)
+  // Time is not recorded here — it is finalised when the student clicks Next,
+  // so that time spent reconsidering counts toward this question.
   const existingIdx = sessionResponses.findIndex(r => r.question_id === q.question_id);
   const response = {
     question_id:        q.question_id,
     answer_given:       letter,
     marks_awarded:      marksAwarded,
-    time_taken_seconds: timeTaken,
+    time_taken_seconds: null,
     slots_satisfied:    satisfiedSlotIds,
     slots_missed:       missedSlotIds
   };
@@ -1007,16 +1007,23 @@ function selectAnswer(btn, letter) {
 }
 
 function nextQuestion() {
+  // Finalise the time for the question the student is leaving.
+  // This captures the full time including any reconsideration after first selection.
+  const timeTaken = Math.round((Date.now() - questionStartTime) / 1000);
+  const q = currentQuestions[currentQIndex];
+  const existingIdx = sessionResponses.findIndex(r => r.question_id === q.question_id);
+  if (existingIdx >= 0) {
+    sessionResponses[existingIdx].time_taken_seconds = timeTaken;
+  }
+
   currentQIndex++;
   if (currentQIndex >= currentQuestions.length) {
-    // Record the end time at the moment the student clicks Finish
     sessionEndTime = new Date();
     endSession();
   } else {
     showQuestion();
   }
 }
-
 function endSession() {
   // Stop the timer and record the exact moment the student clicked Finish
   clearInterval(paperTimerInterval);
