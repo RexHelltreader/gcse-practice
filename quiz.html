@@ -678,7 +678,8 @@ let currentPaper     = null;
 let currentQuestions = [];
 let currentQIndex    = 0;
 let sessionResponses = [];
-let sessionStartTime = null;
+let sessionStartTime   = null;
+let sessionEndTime     = null;
 let paperTimerInterval = null;
 let questionStartTime  = null;
 let paperTimeRemaining = 0;
@@ -857,6 +858,7 @@ async function startPaper(paper_id) {
     currentQIndex      = 0;
     sessionResponses   = [];
     sessionStartTime   = new Date();
+    sessionEndTime     = null;
     paperTimeRemaining = Number(currentPaper.time_limit_seconds);
 
     // Clear loading message before showing first question
@@ -945,26 +947,20 @@ function showQuestion() {
 }
 
 function selectAnswer(btn, letter) {
-  if (btn.classList.contains('selected') || btn.disabled) return;
-
-  const timeTaken = Math.round((Date.now() - questionStartTime) / 1000);
   const q = currentQuestions[currentQIndex];
 
-  // Disable all answer buttons
-  document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
+  // If this answer is already selected, do nothing
+  if (btn.classList.contains('selected')) return;
 
-  // FIX (Issue 3): Stop the paper timer as soon as the final answer is selected,
-  // so time spent on the results/email screen is not counted.
-  if (currentQIndex === currentQuestions.length - 1) {
-    clearInterval(paperTimerInterval);
-  }
+  // Remove previous selection highlight if student is changing their answer
+  document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
 
-  // Mark selected
+  // Mark the newly chosen answer
   btn.classList.add('selected');
 
   // Calculate marks for this answer using granular slot system
-  const answerMarks = q.answerMarks || [];
-  const slots       = q.slots       || [];
+  const answerMarks      = q.answerMarks || [];
+  const slots            = q.slots       || [];
   const satisfiedSlotIds = [];
   const missedSlotIds    = [];
 
@@ -980,25 +976,41 @@ function selectAnswer(btn, letter) {
   });
 
   const marksAwarded = satisfiedSlotIds.length;
+  const timeTaken    = Math.round((Date.now() - questionStartTime) / 1000);
 
-  sessionResponses.push({
+  // Overwrite any previous response for this question (answer may have changed)
+  const existingIdx = sessionResponses.findIndex(r => r.question_id === q.question_id);
+  const response = {
     question_id:        q.question_id,
     answer_given:       letter,
     marks_awarded:      marksAwarded,
     time_taken_seconds: timeTaken,
     slots_satisfied:    satisfiedSlotIds,
     slots_missed:       missedSlotIds
-  });
+  };
+  if (existingIdx >= 0) {
+    sessionResponses[existingIdx] = response;
+  } else {
+    sessionResponses.push(response);
+  }
 
-  // Show next / finish button
+  // On the final question, stop the timer and record the end time
+  // so that time spent on the results screen is not counted.
+  // The timer keeps running if the student changes their mind —
+  // it stops only when they click Finish.
+  const isFinal = currentQIndex === currentQuestions.length - 1;
+
+  // Show next / finish button (first selection on this question)
   document.getElementById('next-btn').style.display = 'inline-block';
   document.getElementById('next-btn').textContent =
-    currentQIndex < currentQuestions.length - 1 ? 'Next question →' : 'Finish paper →';
+    isFinal ? 'Finish paper →' : 'Next question →';
 }
 
 function nextQuestion() {
   currentQIndex++;
   if (currentQIndex >= currentQuestions.length) {
+    // Record the end time at the moment the student clicks Finish
+    sessionEndTime = new Date();
     endSession();
   } else {
     showQuestion();
@@ -1006,8 +1018,10 @@ function nextQuestion() {
 }
 
 function endSession() {
+  // Stop the timer and record the exact moment the student clicked Finish
   clearInterval(paperTimerInterval);
-  const totalSeconds = Math.round((Date.now() - sessionStartTime) / 1000);
+  sessionEndTime = sessionEndTime || new Date();
+  const totalSeconds = Math.round((sessionEndTime - sessionStartTime) / 1000);
   showResultsScreen(totalSeconds);
 }
 
