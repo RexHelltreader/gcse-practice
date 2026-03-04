@@ -837,33 +837,35 @@ function renderLibrary(papers) {
 // ═══════════════════════════════════════════
 async function startPaper(paper_id) {
   showScreen('screen-quiz');
-
-  // Show loading state without destroying the question card structure
-  document.getElementById('question-counter').textContent = '';
-  document.getElementById('progress-bar').style.width = '0%';
-  document.getElementById('timer-display').textContent = '--:--';
-  document.getElementById('question-marks').textContent = '';
-  document.getElementById('question-text').innerHTML = '<p style="color:var(--muted);">Loading paper…</p>';
-  document.getElementById('question-image').style.display = 'none';
+  document.getElementById('question-card').innerHTML =
+    '<div class="spinner-wrap"><div class="spinner"></div><p class="muted">Loading paper…</p></div>';
   document.getElementById('answer-options').innerHTML = '';
   document.getElementById('next-btn').style.display = 'none';
 
   try {
     const data = await apiGet({ action: 'getPaper', paper_id });
-    currentPaper      = data.paper;
-    currentQuestions  = data.questions;
-    currentQIndex     = 0;
-    sessionResponses  = [];
-    sessionStartTime  = new Date();
+    currentPaper     = data.paper;
+    currentQuestions = data.questions;
+    currentQIndex    = 0;
+    sessionResponses = [];
+    sessionStartTime = new Date();
     paperTimeRemaining = Number(currentPaper.time_limit_seconds);
+
+    // Restore question-card markup
+    document.getElementById('question-card').innerHTML = `
+      <div id="question-marks"></div>
+      <div id="question-text"></div>
+      <img id="question-image" src="" alt="Question image" style="max-width:100%;border-radius:8px;margin-bottom:14px;display:none;">
+      <div class="answer-options" id="answer-options"></div>`;
 
     startPaperTimer();
     showQuestion();
   } catch(e) {
-    document.getElementById('question-text').innerHTML =
-      '<p style="color:var(--red,#c0392b);">Could not load this paper. Please try again.</p>';
+    document.getElementById('question-card').innerHTML =
+      `<p class="error-msg">Could not load this paper. Please try again.</p>`;
   }
 }
+
 function startPaperTimer() {
   clearInterval(paperTimerInterval);
   updateTimerDisplay();
