@@ -988,6 +988,11 @@ function closePaperForm() {
 function editPaper(paper_id) {
   const p = allPapers.find(x => x.paper_id === paper_id);
   if (!p) return;
+
+  // Select the paper so the questions section appears below
+  selectPaper(paper_id);
+
+  // Also open the metadata form pre-populated
   document.getElementById('paper-form-title').textContent = 'Edit paper';
   document.getElementById('pf-id').value         = p.paper_id;
   document.getElementById('pf-title').value      = p.title || '';
@@ -995,12 +1000,12 @@ function editPaper(paper_id) {
   document.getElementById('pf-tier').value       = p.tier || '';
   document.getElementById('pf-board').value      = p.exam_board || '';
   document.getElementById('pf-difficulty').value = p.difficulty_label || '';
-  document.getElementById('pf-time').value       = p.time_limit_seconds ? Math.floor(p.time_limit_seconds / 60) : '';
+  document.getElementById('pf-time').value       = p.time_limit_seconds
+    ? Math.floor(p.time_limit_seconds / 60) : '';
   document.getElementById('pf-marks').value      = p.total_marks || '';
   document.getElementById('paper-form-wrap').style.display = '';
   document.getElementById('paper-form-wrap').scrollIntoView({ behavior: 'smooth' });
 }
-
 async function savePaper() {
   const title = document.getElementById('pf-title').value.trim();
   if (!title) { toast('Please enter a title.', 'err'); return; }
