@@ -396,10 +396,10 @@
     margin: 0 auto 20px;
     box-shadow: 0 8px 32px rgba(15,113,115,0.35);
   }
-  .grade-circle.grade-u { background: var(--muted); }
+  .grade-circle.grade-u   { background: var(--muted); }
   .grade-circle.grade-low { background: var(--red); }
   .grade-circle.grade-mid { background: var(--gold); color: var(--ink); }
-  .grade-circle.grade-high { background: var(--green); }
+  .grade-circle.grade-high{ background: var(--green); }
   .score-pct { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 900; }
   .score-label { color: var(--muted); font-size: 0.95rem; margin-bottom: 20px; }
 
@@ -667,16 +667,16 @@
 // ═══════════════════════════════════════════
 // CONFIG — replace with your deployed Apps Script URL
 // ═══════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwID9BLIcBoggLZVt3RjqV_P7kqYrliCPoK6WVf-hdqDqsjNlDH1Eo1OSx37aV7eIBW/exec';
+const SCRIPT_URL = 'PASTE_YOUR_SCRIPT_URL_HERE';
 
 // ═══════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════
-let currentUser   = null;   // { user_id, email, display_name } or null
-let allPapers     = [];
-let currentPaper  = null;
+let currentUser      = null;
+let allPapers        = [];
+let currentPaper     = null;
 let currentQuestions = [];
-let currentQIndex = 0;
+let currentQIndex    = 0;
 let sessionResponses = [];
 let sessionStartTime = null;
 let paperTimerInterval = null;
@@ -714,7 +714,7 @@ async function apiPost(body) {
 // ═══════════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════════
-function openAuthModal() { document.getElementById('modal-overlay').classList.add('open'); }
+function openAuthModal()  { document.getElementById('modal-overlay').classList.add('open'); }
 function closeAuthModal() { document.getElementById('modal-overlay').classList.remove('open'); }
 
 function switchAuthTab(tab) {
@@ -801,9 +801,9 @@ function filterLibrary() {
   const tier  = document.getElementById('filter-tier').value;
   const board = document.getElementById('filter-board').value;
   const filtered = allPapers.filter(p =>
-    (!sub  || p.subject   === sub)  &&
-    (!tier || p.tier      === tier) &&
-    (!board|| p.exam_board=== board)
+    (!sub   || p.subject    === sub)  &&
+    (!tier  || p.tier       === tier) &&
+    (!board || p.exam_board === board)
   );
   renderLibrary(filtered);
 }
@@ -837,32 +837,35 @@ function renderLibrary(papers) {
 // ═══════════════════════════════════════════
 async function startPaper(paper_id) {
   showScreen('screen-quiz');
-  document.getElementById('question-card').innerHTML =
+
+  // Show loading state without destroying question card structure
+  document.getElementById('question-counter').textContent = '';
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('timer-display').textContent = '--:--';
+  document.getElementById('timer-display').classList.remove('urgent');
+  document.getElementById('question-marks').textContent = '';
+  document.getElementById('question-text').innerHTML =
     '<div class="spinner-wrap"><div class="spinner"></div><p class="muted">Loading paper…</p></div>';
+  document.getElementById('question-image').style.display = 'none';
   document.getElementById('answer-options').innerHTML = '';
   document.getElementById('next-btn').style.display = 'none';
 
   try {
     const data = await apiGet({ action: 'getPaper', paper_id });
-    currentPaper     = data.paper;
-    currentQuestions = data.questions;
-    currentQIndex    = 0;
-    sessionResponses = [];
-    sessionStartTime = new Date();
+    currentPaper       = data.paper;
+    currentQuestions   = data.questions;
+    currentQIndex      = 0;
+    sessionResponses   = [];
+    sessionStartTime   = new Date();
     paperTimeRemaining = Number(currentPaper.time_limit_seconds);
 
-    // Restore question-card markup
-    document.getElementById('question-card').innerHTML = `
-      <div id="question-marks"></div>
-      <div id="question-text"></div>
-      <img id="question-image" src="" alt="Question image" style="max-width:100%;border-radius:8px;margin-bottom:14px;display:none;">
-      <div class="answer-options" id="answer-options"></div>`;
+    // Clear loading message before showing first question
+    document.getElementById('question-text').innerHTML = '';
 
-    startPaperTimer();
-    showQuestion();
+    showQuestion(); // timer starts inside showQuestion on first question
   } catch(e) {
-    document.getElementById('question-card').innerHTML =
-      `<p class="error-msg">Could not load this paper. Please try again.</p>`;
+    document.getElementById('question-text').innerHTML =
+      '<p class="error-msg">Could not load this paper. Please try again.</p>';
   }
 }
 
@@ -886,6 +889,12 @@ function updateTimerDisplay() {
 }
 
 function showQuestion() {
+  // FIX (Issue 3): Start the paper timer only when the first question is shown,
+  // not during the network fetch — so loading time is not counted against the student.
+  if (currentQIndex === 0) {
+    startPaperTimer();
+  }
+
   const q = currentQuestions[currentQIndex];
   questionStartTime = Date.now();
 
@@ -900,8 +909,7 @@ function showQuestion() {
     `${q.max_marks} mark${q.max_marks != 1 ? 's' : ''}`;
 
   // Question text
-  document.getElementById('question-text').innerHTML =
-    q.question_text_html || '';
+  document.getElementById('question-text').innerHTML = q.question_text_html || '';
 
   // Question image
   const qImg = document.getElementById('question-image');
@@ -916,8 +924,8 @@ function showQuestion() {
   const opts = document.getElementById('answer-options');
   opts.innerHTML = '';
   ['a','b','c','d'].forEach(letter => {
-    const html  = q[`answer_${letter}_html`]  || '';
-    const imgUrl= q[`answer_${letter}_image_url`] || '';
+    const html   = q[`answer_${letter}_html`]      || '';
+    const imgUrl = q[`answer_${letter}_image_url`] || '';
     if (!html && !imgUrl) return;
 
     const btn = document.createElement('button');
@@ -937,26 +945,33 @@ function showQuestion() {
 }
 
 function selectAnswer(btn, letter) {
-  // Prevent re-selection
   if (btn.classList.contains('selected') || btn.disabled) return;
 
   const timeTaken = Math.round((Date.now() - questionStartTime) / 1000);
   const q = currentQuestions[currentQIndex];
 
-  // Disable all buttons
+  // Disable all answer buttons
   document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
+
+  // FIX (Issue 3): Stop the paper timer as soon as the final answer is selected,
+  // so time spent on the results/email screen is not counted.
+  if (currentQIndex === currentQuestions.length - 1) {
+    clearInterval(paperTimerInterval);
+  }
 
   // Mark selected
   btn.classList.add('selected');
 
-  // Calculate marks for this answer
+  // Calculate marks for this answer using granular slot system
   const answerMarks = q.answerMarks || [];
-  const slots = q.slots || [];
+  const slots       = q.slots       || [];
   const satisfiedSlotIds = [];
-  const missedSlotIds = [];
+  const missedSlotIds    = [];
 
   slots.forEach(slot => {
-    const entry = answerMarks.find(m => m.slot_id === slot.slot_id && m.answer_option === letter);
+    const entry = answerMarks.find(
+      m => m.slot_id === slot.slot_id && m.answer_option === letter
+    );
     if (entry && (entry.is_satisfied === 'TRUE' || entry.is_satisfied === true)) {
       satisfiedSlotIds.push(slot.slot_id);
     } else {
@@ -975,7 +990,7 @@ function selectAnswer(btn, letter) {
     slots_missed:       missedSlotIds
   });
 
-  // Show next button
+  // Show next / finish button
   document.getElementById('next-btn').style.display = 'inline-block';
   document.getElementById('next-btn').textContent =
     currentQIndex < currentQuestions.length - 1 ? 'Next question →' : 'Finish paper →';
@@ -1000,7 +1015,6 @@ function endSession() {
 // RESULTS
 // ═══════════════════════════════════════════
 function showResultsScreen(totalSeconds) {
-  // Calculate client-side totals for immediate display
   let marksAchieved = 0;
   let totalMarks    = 0;
   currentQuestions.forEach(q => {
@@ -1010,25 +1024,20 @@ function showResultsScreen(totalSeconds) {
   });
   const pct = totalMarks > 0 ? Math.round((marksAchieved / totalMarks) * 100) : 0;
 
-  // Grade (estimated client-side; server will confirm)
-  const grade = estimateGrade(pct);
-
-  // Grade circle colour
+  // FIX (Issue 4): Show score and marks immediately but display a placeholder
+  // for the grade until the server confirms the correct value against the
+  // admin-set grade boundaries. This prevents the client-side estimate
+  // from disagreeing with the emailed report.
   const circle = document.getElementById('result-grade-circle');
-  circle.textContent = grade;
-  circle.className = 'grade-circle';
-  if (grade === 'U')              circle.classList.add('grade-u');
-  else if (Number(grade) <= 3)    circle.classList.add('grade-low');
-  else if (Number(grade) <= 6)    circle.classList.add('grade-mid');
-  else                            circle.classList.add('grade-high');
+  circle.textContent = '…';
+  circle.className   = 'grade-circle';
 
-  document.getElementById('result-pct').textContent    = `${pct}%`;
-  document.getElementById('result-marks').textContent  = `${marksAchieved} / ${totalMarks} marks`;
-  document.getElementById('result-time').textContent   = fmtTime(totalSeconds);
+  document.getElementById('result-pct').textContent   = `${pct}%`;
+  document.getElementById('result-marks').textContent = `${marksAchieved} / ${totalMarks} marks`;
+  document.getElementById('result-time').textContent  = fmtTime(totalSeconds);
   document.getElementById('result-remaining').textContent = fmtTime(Math.max(0, paperTimeRemaining));
-  document.getElementById('result-grade').textContent  = grade;
+  document.getElementById('result-grade').textContent = '…';
 
-  // If logged in, show auto-email section
   if (currentUser) {
     document.getElementById('email-section').style.display   = 'none';
     document.getElementById('email-prefilled').style.display = '';
@@ -1038,20 +1047,6 @@ function showResultsScreen(totalSeconds) {
   }
 
   showScreen('screen-results');
-}
-
-function estimateGrade(pct) {
-  // Rough estimate before server response; overridden by server grade
-  if (pct >= 90) return '9';
-  if (pct >= 80) return '8';
-  if (pct >= 70) return '7';
-  if (pct >= 60) return '6';
-  if (pct >= 50) return '5';
-  if (pct >= 40) return '4';
-  if (pct >= 30) return '3';
-  if (pct >= 20) return '2';
-  if (pct >= 10) return '1';
-  return 'U';
 }
 
 function addEmailField() {
@@ -1077,19 +1072,27 @@ async function submitResults() {
 
   try {
     const res = await apiPost({
-      action:               'submitSession',
-      paper_id:             currentPaper.paper_id,
-      user_id:              currentUser ? currentUser.user_id : null,
-      started_at:           sessionStartTime.toISOString(),
-      responses:            sessionResponses,
+      action:                 'submitSession',
+      paper_id:               currentPaper.paper_id,
+      user_id:                currentUser ? currentUser.user_id : null,
+      started_at:             sessionStartTime.toISOString(),
+      responses:              sessionResponses,
       time_remaining_seconds: Math.max(0, paperTimeRemaining),
-      report_emails:        emails
+      report_emails:          emails
     });
 
     if (res.success) {
-      // Update grade with server-confirmed value
-      document.getElementById('result-grade').textContent = res.grade || '—';
-      document.getElementById('result-grade-circle').textContent = res.grade || '—';
+      // FIX (Issue 4): Apply the server-confirmed grade and correct colour
+      // to the grade circle before moving to the submitted screen.
+      const grade  = res.grade || '—';
+      const circle = document.getElementById('result-grade-circle');
+      circle.textContent = grade;
+      circle.className   = 'grade-circle';
+      if (grade === 'U')           circle.classList.add('grade-u');
+      else if (Number(grade) <= 3) circle.classList.add('grade-low');
+      else if (Number(grade) <= 6) circle.classList.add('grade-mid');
+      else                         circle.classList.add('grade-high');
+      document.getElementById('result-grade').textContent = grade;
       showScreen('screen-submitted');
     } else {
       msgEl.innerHTML = '<p class="error-msg">Something went wrong. Please try again.</p>';
